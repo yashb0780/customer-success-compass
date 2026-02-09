@@ -97,10 +97,10 @@ export default function AdminPanel() {
         {/* Integrations */}
         <Card><CardHeader><CardTitle className="text-lg">Tech Stack & Integrations</CardTitle></CardHeader><CardContent className="space-y-4">
           <div><Label>Connected Integrations (one per line)</Label>
-            <Textarea rows={4} value={draft.connectedIntegrations.map(i => i.name).join("\n")} onChange={(e) => update("connectedIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
+            <Textarea rows={4} value={(draft.connectedIntegrations || []).map(i => i.name).join("\n")} onChange={(e) => update("connectedIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
           </div>
           <div><Label>Available Integrations (one per line)</Label>
-            <Textarea rows={4} value={draft.availableIntegrations.map(i => i.name).join("\n")} onChange={(e) => update("availableIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
+            <Textarea rows={4} value={(draft.availableIntegrations || []).map(i => i.name).join("\n")} onChange={(e) => update("availableIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
           </div>
         </CardContent></Card>
 
