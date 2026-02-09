@@ -31,6 +31,8 @@ function IntegrationCard({ integration, connected }: { integration: Integration;
 
 export default function IntegrationOpportunities() {
   const { data } = useQbr();
+  const connected = data.connectedIntegrations || [];
+  const available = data.availableIntegrations || [];
   return (
     <section id="integrations" className="px-6 py-16">
       <div className="mx-auto max-w-5xl space-y-12">
@@ -42,7 +44,7 @@ export default function IntegrationOpportunities() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Connected Integrations</h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {data.connectedIntegrations.map((i) => (
+            {connected.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected />
             ))}
           </div>
@@ -51,7 +53,7 @@ export default function IntegrationOpportunities() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Integrations Available</h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {data.availableIntegrations.map((i) => (
+            {available.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected={false} />
             ))}
           </div>
