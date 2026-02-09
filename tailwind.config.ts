@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        qbr: {
+          success: "hsl(var(--qbr-success))",
+          warning: "hsl(var(--qbr-warning))",
+          danger: "hsl(var(--qbr-danger))",
+          info: "hsl(var(--qbr-info))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
