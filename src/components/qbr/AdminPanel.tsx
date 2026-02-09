@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQbr } from "@/contexts/QbrContext";
-import { QbrData, TeamMember, Feature, NewFeatureCard, NextStepRow, EngagementMetric, TrendDataPoint, BenefitCard, RoadmapItem } from "@/types/qbr";
+import { QbrData, TeamMember, Feature, NewFeatureCard, NextStepRow, EngagementMetric, TrendDataPoint, BenefitCard, RoadmapItem, Integration } from "@/types/qbr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,6 +91,16 @@ export default function AdminPanel() {
           </div>
           <div><Label>What Can Be Improved (one per line)</Label>
             <Textarea rows={5} value={draft.toImprove.join("\n")} onChange={(e) => update("toImprove", e.target.value.split("\n").filter(Boolean))} />
+          </div>
+        </CardContent></Card>
+
+        {/* Integrations */}
+        <Card><CardHeader><CardTitle className="text-lg">Tech Stack & Integrations</CardTitle></CardHeader><CardContent className="space-y-4">
+          <div><Label>Connected Integrations (one per line)</Label>
+            <Textarea rows={4} value={draft.connectedIntegrations.map(i => i.name).join("\n")} onChange={(e) => update("connectedIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
+          </div>
+          <div><Label>Available Integrations (one per line)</Label>
+            <Textarea rows={4} value={draft.availableIntegrations.map(i => i.name).join("\n")} onChange={(e) => update("availableIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
           </div>
         </CardContent></Card>
 

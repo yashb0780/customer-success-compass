@@ -5,6 +5,7 @@ import TeamSection from "@/components/qbr/TeamSection";
 import FeatureAdoption from "@/components/qbr/FeatureAdoption";
 import UserEngagement from "@/components/qbr/UserEngagement";
 import DeepDive from "@/components/qbr/DeepDive";
+import IntegrationOpportunities from "@/components/qbr/IntegrationOpportunities";
 import FutureState from "@/components/qbr/FutureState";
 import ProductRoadmap from "@/components/qbr/ProductRoadmap";
 import NewFeatures from "@/components/qbr/NewFeatures";
@@ -25,6 +26,7 @@ export default function QbrDashboard() {
             { id: "agenda", label: "Agenda" },
             { id: "team", label: "Team" },
             { id: "current-state", label: "Current State" },
+            { id: "integrations", label: "Integrations" },
             { id: "future-state", label: "Future State" },
             { id: "next-steps", label: "Next Steps" },
           ].map((n) => (
@@ -55,6 +57,8 @@ export default function QbrDashboard() {
         </div>
       </section>
 
+      <Separator />
+      <IntegrationOpportunities />
       <Separator />
       <FutureState />
       <Separator />
