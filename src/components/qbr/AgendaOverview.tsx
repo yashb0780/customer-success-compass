@@ -1,30 +1,34 @@
-import { Users, BarChart3, Rocket, ListChecks } from "lucide-react";
+import { Users, BarChart3, Rocket, ListChecks, Plug } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const sections = [
-  { id: "team", title: "Your Team", description: "Meet the team dedicated to your success", icon: Users },
-  { id: "current-state", title: "Current State", description: "Adoption, engagement & deep dive analysis", icon: BarChart3 },
-  { id: "future-state", title: "Future State", description: "Roadmap, new features & product vision", icon: Rocket },
-  { id: "next-steps", title: "Next Steps", description: "Action items & desired outcomes", icon: ListChecks },
+  { id: "team", title: "Your Team", description: "Meet the team dedicated to your success", icon: Users, color: "bg-primary/10 text-primary" },
+  { id: "current-state", title: "Current State", description: "Adoption, engagement & deep dive analysis", icon: BarChart3, color: "bg-qbr-success/10 text-qbr-success" },
+  { id: "integrations", title: "Tech Stack", description: "Connected tools & integration opportunities", icon: Plug, color: "bg-qbr-warning/10 text-qbr-warning" },
+  { id: "future-state", title: "Future State", description: "Roadmap, new features & product vision", icon: Rocket, color: "bg-qbr-info/10 text-qbr-info" },
+  { id: "next-steps", title: "Next Steps", description: "Action items & desired outcomes", icon: ListChecks, color: "bg-accent/10 text-accent" },
 ];
 
 export default function AgendaOverview() {
   return (
-    <section id="agenda" className="qbr-section px-6 py-16">
+    <section id="agenda" className="qbr-section section-alt px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-2 text-center text-3xl font-bold text-foreground">Agenda</h2>
-        <p className="mb-10 text-center text-muted-foreground">Click any section to jump ahead</p>
-        <div className="grid gap-5 sm:grid-cols-2">
-          {sections.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className="group">
-              <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5">
-                <CardHeader className="flex flex-row items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <s.icon className="h-5 w-5" />
+        <div className="text-center mb-12">
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-2">Overview</p>
+          <h2 className="text-4xl font-extrabold text-foreground">Today's Agenda</h2>
+          <p className="mt-3 text-lg text-muted-foreground">Click any section to jump ahead</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sections.map((s, i) => (
+            <a key={s.id} href={`#${s.id}`} className="group" style={{ animationDelay: `${i * 80}ms` }}>
+              <Card className="h-full transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 hover:-translate-y-1 border-2 border-transparent">
+                <CardHeader className="flex flex-row items-start gap-4 p-6">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${s.color} transition-all group-hover:scale-110`}>
+                    <s.icon className="h-6 w-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">{s.title}</CardTitle>
-                    <CardDescription className="mt-1">{s.description}</CardDescription>
+                    <CardTitle className="text-lg font-bold">{s.title}</CardTitle>
+                    <CardDescription className="mt-1 text-sm">{s.description}</CardDescription>
                   </div>
                 </CardHeader>
               </Card>
