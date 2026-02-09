@@ -74,6 +74,18 @@ export const defaultQbrData: QbrData = {
     { title: "Agent Productivity", metric: "+25%", description: "More tickets handled per agent" },
   ],
 
+  connectedIntegrations: [
+    { name: "Salesforce" },
+    { name: "Email" },
+  ],
+  availableIntegrations: [
+    { name: "Slack" },
+    { name: "Jira" },
+    { name: "Google Analytics" },
+    { name: "Zendesk" },
+    { name: "HubSpot" },
+  ],
+
   roadmap: [
     { name: "AI Auto-Resolve", quarter: "Q1 2026", status: "live", impactTags: ["Faster Resolution", "Deflection"], description: "AI automatically resolves common issues end-to-end without agent involvement." },
     { name: "Sentiment Analysis", quarter: "Q1 2026", status: "public-beta", impactTags: ["Increased CSAT", "Proactive"], description: "Real-time customer sentiment detection to prioritize at-risk conversations." },

@@ -54,6 +54,11 @@ export interface NewFeatureCard {
   videoUrl?: string;
 }
 
+export interface Integration {
+  name: string;
+  icon?: string;
+}
+
 export interface NextStepRow {
   outcome: string;
   initiative: string;
@@ -81,6 +86,9 @@ export interface QbrData {
   toImprove: string[];
 
   benefits: BenefitCard[];
+
+  connectedIntegrations: Integration[];
+  availableIntegrations: Integration[];
 
   roadmap: RoadmapItem[];
 
