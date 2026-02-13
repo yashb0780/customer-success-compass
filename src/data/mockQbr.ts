@@ -3,7 +3,7 @@ import { QbrData } from "@/types/qbr";
 export const defaultQbrData: QbrData = {
   customerName: "Acme Corp",
   customerLogoUrl: "",
-  qbrTitle: "Executive Business Review — Q1 2026",
+  qbrTitle: "Quarterly Business Review",
   quarter: "Q1 2026",
   date: "February 2026",
 
