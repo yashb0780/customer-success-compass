@@ -14,8 +14,17 @@ const QbrContext = createContext<QbrContextType | null>(null);
 export function QbrProvider({ customerId, children }: { customerId: string; children: ReactNode }) {
   const storageKey = `qbr-${customerId}`;
   const [data, setDataState] = useState<QbrData>(() => {
-    const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : defaultQbrData;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Merge with defaults to handle missing fields from older saved data
+        return { ...defaultQbrData, ...parsed };
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return defaultQbrData;
   });
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -26,7 +35,7 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(data));
-  }, []);
+  }, [storageKey, data]);
 
   return (
     <QbrContext.Provider value={{ data, setData, isAdmin, setIsAdmin }}>
