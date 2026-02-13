@@ -10,6 +10,7 @@ import FutureState from "@/components/qbr/FutureState";
 import ProductRoadmap from "@/components/qbr/ProductRoadmap";
 import NewFeatures from "@/components/qbr/NewFeatures";
 import NextSteps from "@/components/qbr/NextSteps";
+import ThankYouSlide from "@/components/qbr/ThankYouSlide";
 import AdminPanel from "@/components/qbr/AdminPanel";
 
 const navItems = [
@@ -71,6 +72,7 @@ export default function QbrDashboard() {
       </section>
 
       <NextSteps />
+      <ThankYouSlide />
 
       {/* Footer */}
       <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
