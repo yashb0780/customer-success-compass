@@ -1,6 +1,7 @@
 export type UsageLevel = "high" | "medium" | "low";
 export type TrendDirection = "up" | "down" | "flat";
 export type FeatureStatus = "live" | "public-beta" | "private-beta" | "upcoming";
+export type TeamStatus = "active" | "moderate" | "new" | "planning";
 
 export interface TeamMember {
   name: string;
@@ -65,6 +66,13 @@ export interface NextStepRow {
   actions: string[];
 }
 
+export interface AgentTeam {
+  name: string;
+  agentCount: number;
+  status: TeamStatus;
+  icon?: string;
+}
+
 export interface QbrData {
   customerName: string;
   customerLogoUrl: string;
@@ -81,6 +89,8 @@ export interface QbrData {
   licensedSeats: number;
   engagement: EngagementMetric[];
   trendData: TrendDataPoint[];
+
+  agentTeams: AgentTeam[];
 
   workingWell: string[];
   toImprove: string[];

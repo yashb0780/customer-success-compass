@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQbr } from "@/contexts/QbrContext";
-import { QbrData, RoadmapItem, FeatureStatus } from "@/types/qbr";
+import { QbrData, RoadmapItem, FeatureStatus, AgentTeam, TeamStatus } from "@/types/qbr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,13 @@ const statusOptions: { value: FeatureStatus; label: string }[] = [
   { value: "public-beta", label: "Public Beta" },
   { value: "private-beta", label: "Private Beta" },
   { value: "upcoming", label: "Upcoming" },
+];
+
+const teamStatusOptions: { value: TeamStatus; label: string }[] = [
+  { value: "active", label: "Active" },
+  { value: "moderate", label: "Moderate" },
+  { value: "new", label: "New" },
+  { value: "planning", label: "Planning" },
 ];
 
 const impactTagOptions = [
@@ -72,6 +79,20 @@ export default function AdminPanel() {
     update("roadmap", items);
   };
 
+  const updateTeam = (index: number, field: keyof AgentTeam, value: any) => {
+    const teams = [...(draft.agentTeams ?? [])];
+    teams[index] = { ...teams[index], [field]: value };
+    update("agentTeams", teams);
+  };
+
+  const addTeam = () => {
+    update("agentTeams", [...(draft.agentTeams ?? []), { name: "", agentCount: 0, status: "planning" as TeamStatus }]);
+  };
+
+  const removeTeam = (index: number) => {
+    update("agentTeams", (draft.agentTeams ?? []).filter((_, i) => i !== index));
+  };
+
   const save = () => { setData(draft); setIsAdmin(false); };
 
   return (
@@ -106,6 +127,25 @@ export default function AdminPanel() {
             </div>
           ))}
           <Button variant="outline" size="sm" onClick={() => update("team", [...draft.team, { name: "", role: "", email: "" }])}>+ Add Member</Button>
+        </CardContent></Card>
+
+        {/* Teams & Agents */}
+        <Card><CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Teams & Agents</CardTitle>
+            <Button variant="outline" size="sm" onClick={addTeam}><Plus className="mr-1 h-3 w-3" /> Add Team</Button>
+          </div>
+        </CardHeader><CardContent className="space-y-4">
+          {(draft.agentTeams ?? []).map((team, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input placeholder="Team name" className="flex-1" value={team.name} onChange={(e) => updateTeam(i, "name", e.target.value)} />
+              <Input type="number" placeholder="Agents" className="w-20" value={team.agentCount} onChange={(e) => updateTeam(i, "agentCount", +e.target.value)} />
+              <select className="rounded-md border bg-background px-3 py-2 text-sm" value={team.status} onChange={(e) => updateTeam(i, "status", e.target.value)}>
+                {teamStatusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+              <Button variant="ghost" size="sm" onClick={() => removeTeam(i)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            </div>
+          ))}
         </CardContent></Card>
 
         {/* Engagement */}
@@ -180,7 +220,7 @@ export default function AdminPanel() {
                   ))}
                 </div>
               </div>
-              <div><Label>Demo Video URL</Label><Input placeholder="YouTube or Loom embed URL" value={item.videoUrl || ""} onChange={(e) => updateRoadmapItem(i, "videoUrl", e.target.value)} /></div>
+              <div><Label>Demo Video URL</Label><Input placeholder="YouTube, Loom embed, or direct .mp4 URL" value={item.videoUrl || ""} onChange={(e) => updateRoadmapItem(i, "videoUrl", e.target.value)} /></div>
               <div><Label>Description</Label><Textarea rows={3} value={item.description} onChange={(e) => updateRoadmapItem(i, "description", e.target.value)} /></div>
             </div>
           ))}
