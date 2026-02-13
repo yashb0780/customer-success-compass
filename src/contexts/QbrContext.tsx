@@ -18,8 +18,12 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge with defaults to handle missing fields from older saved data
-        return { ...defaultQbrData, ...parsed };
+        const merged = { ...defaultQbrData, ...parsed };
+        // Fix stale title from older versions
+        if (parsed.qbrTitle && parsed.qbrTitle.toLowerCase().includes("executive")) {
+          merged.qbrTitle = defaultQbrData.qbrTitle;
+        }
+        return merged;
       }
     } catch {
       // ignore parse errors
