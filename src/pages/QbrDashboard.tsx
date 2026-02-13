@@ -11,7 +11,6 @@ import ProductRoadmap from "@/components/qbr/ProductRoadmap";
 import NewFeatures from "@/components/qbr/NewFeatures";
 import NextSteps from "@/components/qbr/NextSteps";
 import AdminPanel from "@/components/qbr/AdminPanel";
-import { useState } from "react";
 
 const navItems = [
   { id: "cover", label: "Home" },
@@ -29,13 +28,13 @@ export default function QbrDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky nav */}
-      <nav className="sticky top-0 z-40 border-b-2 bg-background/90 backdrop-blur-xl shadow-sm">
-        <div className="mx-auto flex max-w-5xl items-center gap-1 overflow-x-auto px-4 py-3">
+      <nav className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-0.5 overflow-x-auto px-4 py-2">
           {navItems.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
-              className="shrink-0 rounded-lg px-4 py-2 text-sm font-semibold text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary"
+              className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {n.label}
             </a>
@@ -48,12 +47,11 @@ export default function QbrDashboard() {
       <TeamSection />
 
       {/* Current State */}
-      <section id="current-state" className="qbr-section section-alt px-6 py-20">
-        <div className="mx-auto max-w-5xl space-y-16">
+      <section id="current-state" className="qbr-section section-alt px-6 py-16">
+        <div className="mx-auto max-w-5xl space-y-12">
           <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-primary mb-2">Analytics</p>
-            <h2 className="text-4xl font-extrabold text-foreground">Current State</h2>
-            <p className="mt-2 text-lg text-muted-foreground">Adoption, engagement & analysis</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-1">Analytics</p>
+            <h2 className="text-2xl font-semibold text-foreground">Current State</h2>
           </div>
           <FeatureAdoption />
           <UserEngagement />
@@ -65,8 +63,8 @@ export default function QbrDashboard() {
       <FutureState />
 
       {/* Roadmap + New Features */}
-      <section className="section-alt px-6 py-20">
-        <div className="mx-auto max-w-5xl space-y-16">
+      <section className="section-alt px-6 py-16">
+        <div className="mx-auto max-w-5xl space-y-12">
           <ProductRoadmap />
           <NewFeatures />
         </div>
@@ -75,8 +73,8 @@ export default function QbrDashboard() {
       <NextSteps />
 
       {/* Footer */}
-      <footer className="border-t-2 px-6 py-10 text-center text-sm text-muted-foreground font-medium">
-        Prepared for {data.customerName} &middot; {data.quarter} &middot; Confidential
+      <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
+        Prepared for {data.customerName} · {data.quarter} · Confidential
       </footer>
 
       <AdminPanel />

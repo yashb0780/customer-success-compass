@@ -1,6 +1,4 @@
 import { useQbr } from "@/contexts/QbrContext";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Plug, Mail, BarChart3, MessageSquare, Bug, TrendingUp, Headphones, Share2, Layers } from "lucide-react";
 import { Integration } from "@/types/qbr";
 
@@ -17,17 +15,15 @@ const iconMap: Record<string, React.ElementType> = {
 function IntegrationCard({ integration, connected }: { integration: Integration; connected: boolean }) {
   const Icon = iconMap[integration.name] || Plug;
   return (
-    <Card className="flex flex-col items-center gap-3 p-6 text-center transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 border-2 border-transparent hover:border-primary/20">
-      <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${connected ? "bg-gradient-to-br from-qbr-success/15 to-qbr-success/5 text-qbr-success" : "bg-gradient-to-br from-primary/15 to-primary/5 text-primary"}`}>
-        <Icon className="h-7 w-7" />
+    <div className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <Icon className="h-4 w-4" />
       </div>
-      <span className="text-sm font-bold text-foreground">{integration.name}</span>
+      <span className="text-sm font-medium text-foreground flex-1">{integration.name}</span>
       {!connected && (
-        <Badge className="bg-qbr-success/10 text-qbr-success border-qbr-success/30 hover:bg-qbr-success/15 font-semibold">
-          Available
-        </Badge>
+        <span className="text-xs font-medium text-qbr-success">Available</span>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -36,30 +32,28 @@ export default function IntegrationOpportunities() {
   const connected = data.connectedIntegrations || [];
   const available = data.availableIntegrations || [];
   return (
-    <section id="integrations" className="qbr-section section-alt px-6 py-20">
-      <div className="mx-auto max-w-5xl space-y-12">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-qbr-warning/10 text-qbr-warning">
-            <Layers className="h-5 w-5" />
+    <section id="integrations" className="qbr-section section-alt px-6 py-16">
+      <div className="mx-auto max-w-5xl space-y-10">
+        <div className="mb-2">
+          <div className="flex items-center gap-2 mb-1">
+            <Layers className="h-4 w-4 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Integrations</p>
           </div>
-          <div>
-            <h2 className="text-4xl font-extrabold text-foreground">Tech Stack & Integrations</h2>
-            <p className="mt-1 text-lg text-muted-foreground">Connected tools &amp; available integrations</p>
-          </div>
+          <h2 className="text-2xl font-semibold text-foreground">Tech Stack & Integrations</h2>
         </div>
 
-        <div className="space-y-5">
-          <h3 className="text-xl font-bold text-foreground">Current Tech Stack</h3>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-muted-foreground">Current Tech Stack</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {connected.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected />
             ))}
           </div>
         </div>
 
-        <div className="space-y-5">
-          <h3 className="text-xl font-bold text-foreground">Available Integrations</h3>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-muted-foreground">Available Integrations</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {available.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected={false} />
             ))}
