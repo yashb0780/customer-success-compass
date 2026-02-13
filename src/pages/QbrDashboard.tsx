@@ -3,7 +3,7 @@ import CoverPage from "@/components/qbr/CoverPage";
 import AgendaOverview from "@/components/qbr/AgendaOverview";
 import TeamSection from "@/components/qbr/TeamSection";
 import FeatureAdoption from "@/components/qbr/FeatureAdoption";
-import UserEngagement from "@/components/qbr/UserEngagement";
+import TeamAgentOverview from "@/components/qbr/TeamAgentOverview";
 import DeepDive from "@/components/qbr/DeepDive";
 import IntegrationOpportunities from "@/components/qbr/IntegrationOpportunities";
 import FutureState from "@/components/qbr/FutureState";
@@ -54,7 +54,7 @@ export default function QbrDashboard() {
             <h2 className="text-2xl font-semibold text-foreground">Current State</h2>
           </div>
           <FeatureAdoption />
-          <UserEngagement />
+          <TeamAgentOverview />
           <DeepDive />
         </div>
       </section>

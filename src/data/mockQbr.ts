@@ -52,6 +52,15 @@ export const defaultQbrData: QbrData = {
     { date: "Feb 1", mau: 128, wau: 94, dau: 71 },
   ],
 
+  agentTeams: [
+    { name: "IT Support", agentCount: 42, status: "active" },
+    { name: "HR", agentCount: 18, status: "active" },
+    { name: "Legal", agentCount: 8, status: "moderate" },
+    { name: "Finance", agentCount: 15, status: "moderate" },
+    { name: "Sales Ops", agentCount: 22, status: "new" },
+    { name: "Facilities", agentCount: 6, status: "planning" },
+  ],
+
   workingWell: [
     "Live chat resolution time decreased by 22% quarter-over-quarter",
     "Knowledge base articles deflecting 35% of common tickets",
