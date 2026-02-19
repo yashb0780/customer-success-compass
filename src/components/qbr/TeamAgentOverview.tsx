@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { useQbr } from "@/contexts/QbrContext";
 import { TeamStatus } from "@/types/qbr";
 import { Shield, Users, Briefcase, Scale, DollarSign, ShoppingCart, Building } from "lucide-react";
@@ -9,7 +10,7 @@ const statusConfig: Record<TeamStatus, { label: string; color: string; borderCol
   planning: { label: "Planning", color: "text-muted-foreground", borderColor: "hsl(240, 4%, 46%)" },
 };
 
-const teamIcons: Record<string, React.ReactNode> = {
+const teamIcons: Record<string, ReactNode> = {
   "IT Support": <Shield className="h-4 w-4" />,
   HR: <Users className="h-4 w-4" />,
   Legal: <Scale className="h-4 w-4" />,
