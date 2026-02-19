@@ -39,23 +39,20 @@ export default function FeatureAdoption() {
         <div className="border-b px-5 py-3">
           <p className="text-sm font-medium text-foreground">Feature Usage Breakdown</p>
         </div>
-        <div className="divide-y">
+        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y">
           {data.features.map((f) => (
-            <div key={f.name} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors">
-              <span className={cn("h-2 w-2 shrink-0 rounded-full",
-                f.usage === "high" && "bg-qbr-success",
-                f.usage === "medium" && "bg-qbr-warning",
-                f.usage === "low" && "bg-qbr-danger",
-              )} />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm text-foreground">{f.name}</p>
-                {f.description && <p className="text-xs text-muted-foreground">{f.description}</p>}
-              </div>
-              <span className={cn("text-xs font-medium",
+            <div key={f.name} className="flex flex-col gap-1 px-4 py-3 hover:bg-muted/30 transition-colors">
+              <p className="text-sm font-medium text-foreground leading-tight">{f.name}</p>
+              <span className={cn("inline-flex items-center gap-1 text-xs font-medium",
                 f.usage === "high" && "text-qbr-success",
                 f.usage === "medium" && "text-qbr-warning",
                 f.usage === "low" && "text-qbr-danger",
               )}>
+                <span className={cn("h-1.5 w-1.5 rounded-full",
+                  f.usage === "high" && "bg-qbr-success",
+                  f.usage === "medium" && "bg-qbr-warning",
+                  f.usage === "low" && "bg-qbr-danger",
+                )} />
                 {usageLabels[f.usage]}
               </span>
             </div>
