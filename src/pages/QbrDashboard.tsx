@@ -79,7 +79,7 @@ export default function QbrDashboard() {
         Prepared for {data.customerName} · {data.quarter} · Confidential
       </footer>
 
-      <AdminPanel />
+      {typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin") && <AdminPanel />}
     </div>
   );
 }
