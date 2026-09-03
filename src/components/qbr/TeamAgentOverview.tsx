@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { useQbr } from "@/contexts/QbrContext";
-import { TeamStatus } from "@/types/qbr";
+import { TeamStatus, IconName } from "@/types/qbr";
 import { Shield, Users, Briefcase, Scale, DollarSign, ShoppingCart, Building } from "lucide-react";
 
 const statusConfig: Record<TeamStatus, { label: string; color: string; borderColor: string }> = {
@@ -10,6 +10,17 @@ const statusConfig: Record<TeamStatus, { label: string; color: string; borderCol
   planning: { label: "Planning", color: "text-muted-foreground", borderColor: "hsl(240, 4%, 46%)" },
 };
 
+const iconsByName: Partial<Record<IconName, ReactNode>> = {
+  shield: <Shield className="h-4 w-4" />,
+  users: <Users className="h-4 w-4" />,
+  scale: <Scale className="h-4 w-4" />,
+  dollar: <DollarSign className="h-4 w-4" />,
+  cart: <ShoppingCart className="h-4 w-4" />,
+  building: <Building className="h-4 w-4" />,
+  briefcase: <Briefcase className="h-4 w-4" />,
+};
+
+// Legacy fallback for teams saved before icons were stored on the data itself.
 const teamIcons: Record<string, ReactNode> = {
   "IT Support": <Shield className="h-4 w-4" />,
   HR: <Users className="h-4 w-4" />,
@@ -35,7 +46,7 @@ export default function TeamAgentOverview() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {teams.map((team) => {
           const cfg = statusConfig[team.status];
-          const icon = teamIcons[team.name] ?? <Briefcase className="h-4 w-4" />;
+          const icon = (team.icon && iconsByName[team.icon]) ?? teamIcons[team.name] ?? <Briefcase className="h-4 w-4" />;
 
           return (
             <div

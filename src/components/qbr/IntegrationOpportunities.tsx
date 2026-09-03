@@ -1,7 +1,19 @@
 import { useQbr } from "@/contexts/QbrContext";
 import { Plug, Mail, BarChart3, MessageSquare, Bug, TrendingUp, Headphones, Share2, Layers } from "lucide-react";
-import { Integration } from "@/types/qbr";
+import { Integration, IconName } from "@/types/qbr";
 
+const iconsByName: Partial<Record<IconName, React.ElementType>> = {
+  trending: TrendingUp,
+  mail: Mail,
+  message: MessageSquare,
+  bug: Bug,
+  chart: BarChart3,
+  headphones: Headphones,
+  share: Share2,
+  plug: Plug,
+};
+
+// Legacy fallback for integrations saved before icons were stored on the data itself.
 const iconMap: Record<string, React.ElementType> = {
   Salesforce: TrendingUp,
   Email: Mail,
@@ -13,7 +25,7 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 function IntegrationCard({ integration, connected }: { integration: Integration; connected: boolean }) {
-  const Icon = iconMap[integration.name] || Plug;
+  const Icon = (integration.icon && iconsByName[integration.icon]) || iconMap[integration.name] || Plug;
   return (
     <div className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">

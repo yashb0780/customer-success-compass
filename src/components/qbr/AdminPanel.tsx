@@ -22,13 +22,14 @@ const teamStatusOptions: { value: TeamStatus; label: string }[] = [
   { value: "planning", label: "Planning" },
 ];
 
-const impactTagOptions = [
-  "Faster Resolution", "Increased CSAT", "Deflection", "Agent Productivity",
-  "Cost Savings", "Proactive", "Reduced Escalations", "Better CX", "Churn Prevention",
-];
-
 export default function AdminPanel() {
   const { data, setData, isAdmin, setIsAdmin } = useQbr();
+  const impactTagOptions = data.impactTagOptions ?? [];
+  // Quarter dropdown labels reuse the roadmap group titles, e.g. "Q1 2026 (This Quarter)".
+  const quarterOptions = (data.quarterOptions ?? []).map((value) => ({
+    value,
+    label: `${value} (${(data.roadmapGroups ?? []).find((g) => g.matchQuarters.includes(value))?.title ?? ""})`,
+  }));
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [draft, setDraft] = useState<QbrData>(data);
@@ -199,9 +200,7 @@ export default function AdminPanel() {
                 <div><Label>Feature Name</Label><Input value={item.name} onChange={(e) => updateRoadmapItem(i, "name", e.target.value)} /></div>
                 <div><Label>Quarter</Label>
                   <select className="w-full rounded-md border bg-background px-3 py-2 text-sm" value={item.quarter} onChange={(e) => updateRoadmapItem(i, "quarter", e.target.value)}>
-                    <option value="Q1 2026">Q1 2026 (This Quarter)</option>
-                    <option value="Q2 2026">Q2 2026 (Next Quarter)</option>
-                    <option value="H2 2026">H2 2026 (Later This Year)</option>
+                    {quarterOptions.map(q => <option key={q.value} value={q.value}>{q.label}</option>)}
                   </select>
                 </div>
               </div>

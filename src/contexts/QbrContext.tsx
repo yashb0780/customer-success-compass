@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { QbrData } from "@/types/qbr";
-import { defaultQbrData } from "@/data/mockQbr";
+import { accountData } from "@/data/account";
 
 interface QbrContextType {
   data: QbrData;
@@ -18,17 +18,17 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        const merged = { ...defaultQbrData, ...parsed };
+        const merged = { ...accountData, ...parsed };
         // Fix stale title from older versions
         if (parsed.qbrTitle && parsed.qbrTitle.toLowerCase().includes("executive")) {
-          merged.qbrTitle = defaultQbrData.qbrTitle;
+          merged.qbrTitle = accountData.qbrTitle;
         }
         return merged;
       }
     } catch {
       // ignore parse errors
     }
-    return defaultQbrData;
+    return accountData;
   });
   const [isAdmin, setIsAdmin] = useState(false);
 

@@ -3,6 +3,18 @@ export type TrendDirection = "up" | "down" | "flat";
 export type FeatureStatus = "live" | "public-beta" | "private-beta" | "upcoming";
 export type TeamStatus = "active" | "moderate" | "new" | "planning";
 
+/**
+ * A named icon. Stored as a plain string rather than a React component so the
+ * account data stays serializable JSON — a component could not survive a round
+ * trip through the HubSpot API. Each component maps the names it needs onto
+ * real lucide-react icons at render time.
+ */
+export type IconName =
+  | "users" | "chart" | "rocket" | "checklist" | "plug"
+  | "shield" | "briefcase" | "scale" | "dollar" | "cart" | "building"
+  | "mail" | "message" | "bug" | "trending" | "headphones" | "share"
+  | "clock" | "thumbsup" | "zap";
+
 export interface TeamMember {
   name: string;
   role: string;
@@ -34,7 +46,7 @@ export interface BenefitCard {
   title: string;
   metric: string;
   description: string;
-  icon?: string;
+  icon?: IconName;
 }
 
 export interface RoadmapItem {
@@ -57,7 +69,7 @@ export interface NewFeatureCard {
 
 export interface Integration {
   name: string;
-  icon?: string;
+  icon?: IconName;
 }
 
 export interface NextStepRow {
@@ -70,7 +82,33 @@ export interface AgentTeam {
   name: string;
   agentCount: number;
   status: TeamStatus;
-  icon?: string;
+  icon?: IconName;
+}
+
+/** One link in the sticky nav bar. `id` must match a section's DOM id. */
+export interface NavItem {
+  id: string;
+  label: string;
+}
+
+/** One card in the "Today's Agenda" grid. */
+export interface AgendaSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: IconName;
+}
+
+/** One heading in the Product Roadmap; items whose quarter is listed appear here. */
+export interface RoadmapGroup {
+  title: string;
+  matchQuarters: string[];
+}
+
+/** The workflow diagram at the top of the Future State section. */
+export interface FutureStateContent {
+  workflowTitle: string;
+  workflowSteps: string[];
 }
 
 export interface QbrData {
@@ -105,6 +143,17 @@ export interface QbrData {
   newFeatures: NewFeatureCard[];
 
   nextSteps: NextStepRow[];
+
+  navItems: NavItem[];
+  agendaSections: AgendaSection[];
+  futureState: FutureStateContent;
+  roadmapGroups: RoadmapGroup[];
+  /** Selectable impact tags in the admin panel's roadmap editor. */
+  impactTagOptions: string[];
+  /** Selectable quarters in the admin panel's roadmap editor. */
+  quarterOptions: string[];
+  /** Trailing note in the page footer, e.g. "Confidential". */
+  footerNote: string;
 
   adminPassword: string;
 }

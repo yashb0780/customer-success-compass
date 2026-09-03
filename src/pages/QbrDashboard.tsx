@@ -13,18 +13,9 @@ import NextSteps from "@/components/qbr/NextSteps";
 import ThankYouSlide from "@/components/qbr/ThankYouSlide";
 import AdminPanel from "@/components/qbr/AdminPanel";
 
-const navItems = [
-  { id: "cover", label: "Home" },
-  { id: "agenda", label: "Agenda" },
-  { id: "team", label: "Team" },
-  { id: "current-state", label: "Current State" },
-  { id: "integrations", label: "Tech Stack" },
-  { id: "future-state", label: "Future State" },
-  { id: "next-steps", label: "Next Steps" },
-];
-
 export default function QbrDashboard() {
   const { data } = useQbr();
+  const navItems = data.navItems ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,7 +67,7 @@ export default function QbrDashboard() {
 
       {/* Footer */}
       <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
-        Prepared for {data.customerName} · {data.quarter} · Confidential
+        Prepared for {data.customerName} · {data.quarter} · {data.footerNote}
       </footer>
 
       {typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin") && <AdminPanel />}

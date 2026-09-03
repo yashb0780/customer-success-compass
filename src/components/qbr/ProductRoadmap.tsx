@@ -19,14 +19,13 @@ export default function ProductRoadmap() {
   const { data } = useQbr();
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
 
-  const grouped = {
-    current: data.roadmap.filter((r) => r.quarter.includes("Q1 2026")),
-    next: data.roadmap.filter((r) => r.quarter.includes("Q2 2026")),
-    future: data.roadmap.filter((r) => r.quarter.includes("H2")),
-  };
+  const groups = (data.roadmapGroups ?? []).map((g) => ({
+    title: g.title,
+    items: data.roadmap.filter((r) => g.matchQuarters.includes(r.quarter)),
+  }));
 
   const renderGroup = (title: string, items: typeof data.roadmap) => (
-    <div className="space-y-3">
+    <div key={title} className="space-y-3">
       <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{title}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => {
@@ -84,9 +83,7 @@ export default function ProductRoadmap() {
   return (
     <div className="space-y-8">
       <h3 className="text-lg font-semibold text-foreground">Product Roadmap</h3>
-      {grouped.current.length > 0 && renderGroup("This Quarter", grouped.current)}
-      {grouped.next.length > 0 && renderGroup("Next Quarter", grouped.next)}
-      {grouped.future.length > 0 && renderGroup("Later This Year", grouped.future)}
+      {groups.map((g) => g.items.length > 0 && renderGroup(g.title, g.items))}
     </div>
   );
 }

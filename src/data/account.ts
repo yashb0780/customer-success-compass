@@ -1,6 +1,6 @@
 import { QbrData } from "@/types/qbr";
 
-export const defaultQbrData: QbrData = {
+export const accountData: QbrData = {
   customerName: "Acme Corp",
   customerLogoUrl: "",
   qbrTitle: "Quarterly Business Review",
@@ -47,12 +47,12 @@ export const defaultQbrData: QbrData = {
   ],
 
   agentTeams: [
-    { name: "IT Support", agentCount: 42, status: "active" },
-    { name: "HR", agentCount: 18, status: "active" },
-    { name: "Legal", agentCount: 8, status: "moderate" },
-    { name: "Finance", agentCount: 15, status: "moderate" },
-    { name: "Sales Ops", agentCount: 22, status: "new" },
-    { name: "Facilities", agentCount: 6, status: "planning" },
+    { name: "IT Support", agentCount: 42, status: "active", icon: "shield" },
+    { name: "HR", agentCount: 18, status: "active", icon: "users" },
+    { name: "Legal", agentCount: 8, status: "moderate", icon: "scale" },
+    { name: "Finance", agentCount: 15, status: "moderate", icon: "dollar" },
+    { name: "Sales Ops", agentCount: 22, status: "new", icon: "cart" },
+    { name: "Facilities", agentCount: 6, status: "planning", icon: "building" },
   ],
 
   workingWell: [
@@ -71,22 +71,22 @@ export const defaultQbrData: QbrData = {
   ],
 
   benefits: [
-    { title: "Ticket Deflection", metric: "40%", description: "Reduce inbound tickets with bots + KB" },
-    { title: "Avg Handle Time", metric: "-30%", description: "Faster resolution with AI Copilot" },
-    { title: "CSAT Score", metric: "4.7/5", description: "Target through proactive engagement" },
-    { title: "Agent Productivity", metric: "+25%", description: "More tickets handled per agent" },
+    { title: "Ticket Deflection", metric: "40%", description: "Reduce inbound tickets with bots + KB", icon: "trending" },
+    { title: "Avg Handle Time", metric: "-30%", description: "Faster resolution with AI Copilot", icon: "clock" },
+    { title: "CSAT Score", metric: "4.7/5", description: "Target through proactive engagement", icon: "thumbsup" },
+    { title: "Agent Productivity", metric: "+25%", description: "More tickets handled per agent", icon: "zap" },
   ],
 
   connectedIntegrations: [
-    { name: "Salesforce" },
-    { name: "Email" },
+    { name: "Salesforce", icon: "trending" },
+    { name: "Email", icon: "mail" },
   ],
   availableIntegrations: [
-    { name: "Slack" },
-    { name: "Jira" },
-    { name: "Google Analytics" },
-    { name: "Zendesk" },
-    { name: "HubSpot" },
+    { name: "Slack", icon: "message" },
+    { name: "Jira", icon: "bug" },
+    { name: "Google Analytics", icon: "chart" },
+    { name: "Zendesk", icon: "headphones" },
+    { name: "HubSpot", icon: "share" },
   ],
 
   roadmap: [
@@ -141,6 +141,57 @@ export const defaultQbrData: QbrData = {
       actions: ["Launch proactive messaging for at-risk accounts", "Enable sentiment analysis routing rules", "Create escalation playbook for negative-sentiment tickets"],
     },
   ],
+
+  // Sticky nav bar at the top of the page (was hardcoded in QbrDashboard.tsx).
+  navItems: [
+    { id: "cover", label: "Home" },
+    { id: "agenda", label: "Agenda" },
+    { id: "team", label: "Team" },
+    { id: "current-state", label: "Current State" },
+    { id: "integrations", label: "Tech Stack" },
+    { id: "future-state", label: "Future State" },
+    { id: "next-steps", label: "Next Steps" },
+  ],
+
+  // "Today's Agenda" cards (was hardcoded in AgendaOverview.tsx).
+  agendaSections: [
+    { id: "team", title: "Your Team", description: "Meet the team dedicated to your success", icon: "users" },
+    { id: "current-state", title: "Current State", description: "Adoption, engagement & deep dive analysis", icon: "chart" },
+    { id: "integrations", title: "Tech Stack", description: "Connected tools & integration opportunities", icon: "plug" },
+    { id: "future-state", title: "Future State", description: "Roadmap, new features & product vision", icon: "rocket" },
+    { id: "next-steps", title: "Next Steps", description: "Action items & desired outcomes", icon: "checklist" },
+  ],
+
+  // Workflow diagram in the Future State section (was hardcoded in FutureState.tsx).
+  futureState: {
+    workflowTitle: "Optimized Support Flow",
+    workflowSteps: [
+      "Customer Query",
+      "AI Triage",
+      "Auto-Resolve / Route",
+      "Agent Assist",
+      "Resolution + CSAT",
+    ],
+  },
+
+  // Roadmap headings and which quarters fall under each (was hardcoded in ProductRoadmap.tsx).
+  // NOTE: these are literal 2026 strings. A roadmap item whose quarter is not
+  // listed here renders nowhere — see "Known gaps" in CLAUDE.md.
+  roadmapGroups: [
+    { title: "This Quarter", matchQuarters: ["Q1 2026"] },
+    { title: "Next Quarter", matchQuarters: ["Q2 2026"] },
+    { title: "Later This Year", matchQuarters: ["H2 2026"] },
+  ],
+
+  // Admin panel dropdown choices (were hardcoded in AdminPanel.tsx).
+  impactTagOptions: [
+    "Faster Resolution", "Increased CSAT", "Deflection", "Agent Productivity",
+    "Cost Savings", "Proactive", "Reduced Escalations", "Better CX", "Churn Prevention",
+  ],
+  quarterOptions: ["Q1 2026", "Q2 2026", "H2 2026"],
+
+  // Trailing note in the page footer (was hardcoded in QbrDashboard.tsx).
+  footerNote: "Confidential",
 
   adminPassword: "qbr2026",
 };
