@@ -258,6 +258,76 @@ Two implementation notes worth keeping:
   headings' box width changes from full-width to content-width, which has no
   visual effect. On a narrow screen the note wraps below the heading.
 
+## Adoption metrics (tool-agnostic)
+
+`AdoptionMetrics` in `src/types/adoption.ts` is the internal shape. The
+dashboard never speaks Gainsight or Planhat: each tool gets an adapter in
+`src/lib/adoption/` that maps its payload into this shape, so adding or
+swapping a tool changes one adapter.
+
+Two decisions worth keeping:
+
+- **Health scores keep their original scale.** Gainsight scores 0-100, Planhat
+  0-10. Both are normalised to `health.normalized` (0-100) so the UI renders one
+  scale, but `raw`, `scaleMin` and `scaleMax` are kept, because "7.4" is
+  meaningless without its scale and a CSM reconciling against the source tool
+  needs the number they saw there.
+- **Missing data is named, never defaulted.** Anything an adapter cannot supply
+  is listed in `unavailable` (e.g. `"activity.dau"`, which Planhat does not
+  report). In a QBR "0 logins" and "we do not know" are completely different
+  statements, and a shape that cannot tell them apart will eventually put a
+  confident zero in front of a customer.
+
+`src/lib/adoption/fixtures.ts` holds synthetic payloads **modelled on each
+vendor's published field names, not captured from a real tenant** — we have no
+live access to either tool. They are enough to build and test the mapping
+against; they are not evidence the mapping matches production data. Re-check
+each adapter against a real payload before trusting it.
+
+## Extraction pipeline (HubSpot + Gong -> Deep Dive)
+
+`POST /api/extract { domain }` looks a customer up and drafts the Deep Dive.
+Triggered automatically when a CSM leaves the Customer Domain field in the
+admin panel.
+
+**It returns a draft and saves nothing.** The CSM sees what matched — company,
+note count, call count, newest source date, warnings — and presses Apply. A
+wrong match would otherwise put another customer's material straight into this
+QBR, which is then presented to them.
+
+### Matching rules, and why
+
+**Calls are matched by participant email domain only. There is deliberately no
+company-name matching and no reliance on a HubSpot-Gong linkage.**
+
+- Name matching cannot separate "Acme Corp" from "Acme Corporation" from "Acme
+  Holdings". A false positive does not show an empty section, it pulls another
+  customer's transcript into this QBR, silently. Returning nothing is always
+  the better failure.
+- The Gong-HubSpot linkage only exists if that integration is configured, so
+  code assuming it will silently find nothing.
+- Requiring a customer participant also excludes internal calls — pipeline
+  reviews have only colleagues on them.
+- Consumer email domains (`gmail.com` and friends) are rejected outright: such
+  a record would match half the call library.
+- Subdomains match (`eu.acme.com`), lookalikes do not (`acme.com.evil.net`,
+  `acmecorp.com`). See `src/lib/matching.ts` and its tests.
+- A 180-day recency window applies, and skipped older calls are reported rather
+  than silently dropped.
+- Multiple HubSpot companies on one domain (duplicates, subsidiaries, test
+  records) are surfaced as a warning, not silently resolved to the first.
+
+### Credentials
+
+`HUBSPOT_TOKEN`, `GONG_TOKEN` and `ANTHROPIC_API_KEY` are Vercel environment
+variables read only in `api/lib/env.ts`, inside serverless functions. If any is
+missing the endpoint returns **503 naming exactly which**, rather than an empty
+draft that reads like "this customer has nothing to report".
+
+**The HubSpot and Gong clients are unverified against live tenants.** They were
+written from each vendor's published API shapes with no token available to test
+them. Treat the field mappings as a first draft.
+
 ## Known gaps and rough edges
 
 - **There is no authentication. The editor is open to anyone with the URL.**

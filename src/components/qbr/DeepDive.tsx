@@ -1,14 +1,18 @@
 import { useQbr } from "@/contexts/QbrContext";
 import { CheckCircle2, AlertTriangle, Search } from "lucide-react";
+import SectionSourceNote from "@/components/qbr/SectionSourceNote";
 
 export default function DeepDive() {
   const { data } = useQbr();
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold text-foreground">Deep Dive Analysis</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-lg font-semibold text-foreground">Deep Dive Analysis</h3>
+        </div>
+        <SectionSourceNote section="deepDive" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-lg border bg-card">

@@ -17,5 +17,5 @@
     "strict": false,
     "noImplicitAny": false
   },
-  "include": ["api", "src/data/account.ts", "src/types/qbr.ts"]
+  "include": ["api", "src/data/account.ts", "src/types/qbr.ts", "src/types/adoption.ts", "src/lib/matching.ts"]
 }

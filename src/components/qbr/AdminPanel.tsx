@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Save, X, Plus, Trash2, RotateCcw, Pencil } from "lucide-react";
+import { Save, X, Plus, Trash2, RotateCcw, Pencil, Search, Loader2, AlertTriangle } from "lucide-react";
+import { extractDeepDive, ExtractError, type ExtractResult } from "@/lib/extractDeepDive";
 
 const statusOptions: { value: FeatureStatus; label: string }[] = [
   { value: "live", label: "Live" },
@@ -47,6 +48,15 @@ export default function AdminPanel() {
     label: `${value} (${(data.roadmapGroups ?? []).find((g) => g.matchQuarters.includes(value))?.title ?? ""})`,
   }));
   const [confirmReset, setConfirmReset] = useState(false);
+
+  // Domain lookup. The result is held here and only written into the QBR when
+  // the CSM presses Apply — a wrong match would otherwise put another
+  // customer's material straight into this document.
+  const [lookup, setLookup] = useState<
+    { state: "idle" } | { state: "loading" } | { state: "error"; message: string }
+    | { state: "ready"; result: ExtractResult }
+  >({ state: "idle" });
+  const [lastLookedUp, setLastLookedUp] = useState("");
   const [draft, setDraft] = useState<QbrData>(data);
 
   const update = <K extends keyof QbrData>(key: K, val: QbrData[K]) => setDraft({ ...draft, [key]: val });
@@ -89,6 +99,30 @@ export default function AdminPanel() {
 
   const removeTeam = (index: number) => {
     update("agentTeams", (draft.agentTeams ?? []).filter((_, i) => i !== index));
+  };
+
+  const runLookup = async (domain: string) => {
+    if (!domain || domain === lastLookedUp) return;
+    setLastLookedUp(domain);
+    setLookup({ state: "loading" });
+    try {
+      setLookup({ state: "ready", result: await extractDeepDive(domain, draft.customerName) });
+    } catch (err) {
+      setLookup({
+        state: "error",
+        message: err instanceof ExtractError ? err.message : "Lookup failed.",
+      });
+    }
+  };
+
+  const applyDraft = (result: ExtractResult) => {
+    setDraft({
+      ...draft,
+      workingWell: result.draft.workingWell,
+      toImprove: result.draft.toImprove,
+      provenance: { ...(draft.provenance ?? {}), deepDive: result.provenance },
+    });
+    setLookup({ state: "idle" });
   };
 
   if (!isEditorOpen) {
@@ -144,11 +178,61 @@ export default function AdminPanel() {
               value={draft.customerDomain ?? ""}
               placeholder="acme.com"
               onChange={(e) => update("customerDomain", e.target.value)}
-              onBlur={(e) => update("customerDomain", normalizeDomain(e.target.value))}
+              onBlur={(e) => {
+                const clean = normalizeDomain(e.target.value);
+                update("customerDomain", clean);
+                void runLookup(clean);
+              }}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Used to find this customer's records. Not shown on the page.
+              Used to find this customer's records in HubSpot and Gong. Not shown on the page.
             </p>
+
+            {lookup.state === "loading" && (
+              <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Looking up HubSpot and Gong…
+              </p>
+            )}
+
+            {lookup.state === "error" && (
+              <p className="mt-2 flex items-start gap-2 rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-qbr-warning" />
+                <span>{lookup.message}</span>
+              </p>
+            )}
+
+            {lookup.state === "ready" && (
+              <div className="mt-2 space-y-2 rounded-md border bg-card p-3">
+                <p className="flex items-center gap-2 text-xs font-medium text-foreground">
+                  <Search className="h-3.5 w-3.5" />
+                  Matched {lookup.result.sources.company.name ?? lookup.result.sources.company.id}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {lookup.result.sources.noteCount} CRM note(s), {lookup.result.sources.callCount} call(s)
+                  {lookup.result.sources.newestSourceDate
+                    ? ` · newest ${lookup.result.sources.newestSourceDate.slice(0, 10)}`
+                    : ""}
+                </p>
+                {lookup.result.warnings.map((w) => (
+                  <p key={w} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-qbr-warning" />
+                    <span>{w}</span>
+                  </p>
+                ))}
+                <div className="rounded border bg-muted/30 p-2 text-xs text-muted-foreground">
+                  <p className="font-medium text-foreground">Draft Deep Dive</p>
+                  <p className="mt-1">Working well: {lookup.result.draft.workingWell.length} point(s)</p>
+                  <p>To improve: {lookup.result.draft.toImprove.length} point(s)</p>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Check this is the right customer before applying — it replaces the Deep Dive section.
+                </p>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={() => applyDraft(lookup.result)}>Apply to Deep Dive</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setLookup({ state: "idle" })}>Dismiss</Button>
+                </div>
+              </div>
+            )}
           </div>
           <div><Label>Logo URL</Label><Input value={draft.customerLogoUrl} onChange={(e) => update("customerLogoUrl", e.target.value)} /></div>
           <div><Label>QBR Title</Label><Input value={draft.qbrTitle} onChange={(e) => update("qbrTitle", e.target.value)} /></div>

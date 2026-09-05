@@ -204,5 +204,6 @@ export const accountData: QbrData = {
     integrations: { kind: "manual" },
     roadmap: { kind: "manual" },
     newFeatures: { kind: "manual" },
+    deepDive: { kind: "manual" },
   },
 };

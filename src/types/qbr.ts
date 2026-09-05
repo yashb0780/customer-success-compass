@@ -122,7 +122,12 @@ export interface ContentProvenance {
 }
 
 /** Sections whose content can come from an extracted source. */
-export type SourcedSection = "features" | "integrations" | "roadmap" | "newFeatures";
+export type SourcedSection =
+  | "features"
+  | "integrations"
+  | "roadmap"
+  | "newFeatures"
+  | "deepDive";
 
 export type ProvenanceMap = Partial<Record<SourcedSection, ContentProvenance>>;
 

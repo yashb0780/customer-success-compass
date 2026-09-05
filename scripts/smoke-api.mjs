@@ -111,6 +111,52 @@ check("error responses carry no data", bad.body?.data === undefined);
 const post = await call({ method: "POST", query: {} });
 check("POST is rejected with 405", post.statusCode === 405, `got ${post.statusCode}`);
 
+// ---------------------------------------------------------------------------
+// api/extract — every guard below is reachable WITHOUT credentials, which is
+// the point: the endpoint must refuse clearly rather than return an empty
+// draft that reads like "this customer has nothing to report".
+// ---------------------------------------------------------------------------
+const EXTRACT = ".vercel/output/functions/api/extract.func/api/extract.js";
+const extractAbs = resolve(process.cwd(), EXTRACT);
+
+if (!existsSync(extractAbs)) {
+  fail(`No built function at ${EXTRACT}`);
+}
+
+let extract;
+try {
+  extract = (await import(pathToFileURL(extractAbs).href)).default;
+} catch (err) {
+  fail(`The built extract function could not be loaded.\n          ${err.code ?? err.name}: ${err.message.split("\n")[0]}`);
+}
+
+async function callExtract(req) {
+  const res = mockRes();
+  await extract(req, res);
+  return res;
+}
+
+console.log("");
+const wrongMethod = await callExtract({ method: "GET", body: {} });
+check("extract rejects GET with 405", wrongMethod.statusCode === 405, `got ${wrongMethod.statusCode}`);
+
+const noDomain = await callExtract({ method: "POST", body: {} });
+check("extract requires a domain (400)", noDomain.statusCode === 400, `got ${noDomain.statusCode}`);
+
+const freeMail = await callExtract({ method: "POST", body: { domain: "gmail.com" } });
+check("extract refuses a consumer email domain", freeMail.statusCode === 400 &&
+  freeMail.body?.error?.code === "free_email_domain", JSON.stringify(freeMail.body?.error));
+
+const unconfigured = await callExtract({ method: "POST", body: { domain: "acme.com" } });
+check("extract says which tokens are missing rather than returning an empty draft",
+  unconfigured.statusCode === 503 && unconfigured.body?.error?.code === "not_configured",
+  JSON.stringify(unconfigured.body?.error));
+check("that message names the env vars to set",
+  ["HUBSPOT_TOKEN", "GONG_TOKEN", "ANTHROPIC_API_KEY"].every((k) =>
+    (unconfigured.body?.error?.message ?? "").includes(k)),
+  unconfigured.body?.error?.message);
+check("extract responses are never cached", unconfigured.headers["cache-control"] === "no-store");
+
 const failed = checks.filter((c) => !c.ok);
 if (failed.length) {
   console.error(`\n  ${failed.length} of ${checks.length} checks failed. Do not push.\n`);
