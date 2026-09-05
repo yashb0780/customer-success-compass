@@ -10,7 +10,12 @@
  * file's environment (process.env) and never anywhere under src/.
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { accountData } from "../src/data/account";
+// NOTE: the ".js" extension is required, not optional. package.json sets
+// "type": "module", so this compiles to an ES module and Node's ESM loader
+// will not resolve an extensionless relative path at runtime — it fails with
+// ERR_MODULE_NOT_FOUND. TypeScript maps the ".js" specifier back to the ".ts"
+// source. `vercel dev` tolerates the extensionless form; the real build does not.
+import { accountData } from "../src/data/account.js";
 import type {
   AccountErrorResponse,
   AccountResponse,
