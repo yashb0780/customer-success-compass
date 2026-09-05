@@ -21,7 +21,7 @@ import type {
   AccountResponse,
   AccountSource,
   QbrData,
-} from "../src/types/qbr";
+} from "../src/types/qbr.js";
 
 /** Used when the caller does not pass an id — the single account we serve today. */
 const DEFAULT_CUSTOMER_ID = "default";

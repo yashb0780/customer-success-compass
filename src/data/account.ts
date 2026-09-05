@@ -1,6 +1,6 @@
 // Relative (not the "@/" alias) so the serverless function in api/ can import
 // this file too — that alias only exists inside the Vite build.
-import type { QbrData } from "../types/qbr";
+import type { QbrData } from "../types/qbr.js";
 
 export const accountData: QbrData = {
   customerName: "Acme Corp",

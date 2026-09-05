@@ -2,12 +2,16 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+
+    // module/moduleResolution MUST stay "nodenext" to match how Vercel compiles
+    // serverless functions. Under "bundler", TypeScript accepts extensionless
+    // relative imports that then fail at runtime with ERR_MODULE_NOT_FOUND —
+    // that mismatch is what caused the 2026-09-04 production 500.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
     "types": ["node"],
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
     "resolveJsonModule": true,
     "noEmit": true,
     "strict": false,

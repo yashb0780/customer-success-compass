@@ -12,7 +12,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev:api": "npx vercel dev",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.api.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.api.json",
+    "build:vercel": "npx vercel build --prod --yes",
+    "smoke:api": "node scripts/smoke-api.mjs",
+    "verify": "npm run typecheck && npm test && npm run build:vercel && npm run smoke:api"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -38,10 +38,13 @@ come back from an API.
 Commands:
 
 ```bash
-npm run dev      # local dev server
-npm run build    # production build
-npm run lint     # eslint
-npm test         # vitest run
+npm run dev       # Vite dev server (UI only - /api is NOT served, see below)
+npm run dev:api   # vercel dev - serves the UI *and* the serverless function
+npm run build     # Vite production build
+npm run lint      # eslint (currently exits 1 on pre-existing errors, see Known gaps)
+npm test          # vitest run
+npm run typecheck # tsc over the app AND the api/ folder
+npm run verify    # REQUIRED BEFORE PUSHING - see below
 ```
 
 ## File structure
@@ -57,16 +60,25 @@ src/
     QbrDashboard.tsx          the page: sticky nav + every section in order
     NotFound.tsx              catch-all 404
   contexts/
-    QbrContext.tsx            QbrProvider + useQbr(); holds data, persists to localStorage
+    QbrContext.tsx            QbrProvider + useQbr(); fetches the account, holds admin overrides
   data/
-    mockQbr.ts                defaultQbrData — the Acme Corp content
+    account.ts                accountData — the Acme Corp content; now the FALLBACK,
+                              not the source of truth (the API is)
   types/
     qbr.ts                    QbrData and all its sub-types
   components/
     qbr/                      one file per section of the QBR page
+      QbrSkeleton.tsx         loading placeholder shown while the fetch is in flight
     ui/                       shadcn primitives — generated, don't hand-edit
     NavLink.tsx               router NavLink wrapper (currently unused)
-  hooks/, lib/, test/
+  lib/
+    fetchAccount.ts           client-side wrapper around GET /api/account
+  hooks/, test/
+
+api/
+  account.ts                  serverless function: GET /api/account?id=<customerId>
+scripts/
+  smoke-api.mjs               loads + invokes the BUILT function (npm run smoke:api)
 ```
 
 ### Page sections and the files that render them
@@ -99,23 +111,45 @@ edit them.
 
 ## How the data flows
 
-`src/data/mockQbr.ts` (`defaultQbrData`)
-  -> `QbrProvider` in `src/contexts/QbrContext.tsx`
-  -> `useQbr()` in each section component
+```
+GET /api/account?id=<customerId>      api/account.ts, runs on Vercel's servers
+  -> fetchAccount()                   src/lib/fetchAccount.ts
+  -> QbrProvider (React Query)        src/contexts/QbrContext.tsx
+  -> useQbr()                         every section component
+```
 
-Most account content is already centralized in `mockQbr.ts` and typed by
-`QbrData` in `src/types/qbr.ts`. Components read it via `useQbr()`; they do not
-receive props.
+Components read everything from `useQbr()`; they never receive props and never
+import the data file. That is what let the data source change without touching
+a single section component.
 
-**localStorage overrides the data file.** `QbrProvider` reads
-`localStorage["qbr-<customerId>"]` on mount and shallow-merges it over
-`defaultQbrData`, then writes back on every change. Consequences to remember:
+The provider layers three things, in this order:
 
-- Editing `mockQbr.ts` may appear to do nothing in a browser that has saved
-  data. Clear the `qbr-<customerId>` key (or use a fresh profile) when
-  verifying a data change.
-- The merge is shallow, so *new top-level fields* fall through to the defaults
-  correctly, but changes nested inside an existing field do not.
+1. **The API response** (`AccountResponse` = `{ data: QbrData, meta }`) is the
+   source of truth.
+2. **If the API fails**, it falls back to `accountData` compiled into the bundle
+   from `src/data/account.ts`, so a QBR being presented live never collapses to
+   an error screen. `meta` is `null` and `isFallback` is true in that state.
+3. **Saved admin edits** in `localStorage["qbr-<customerId>"]` are shallow-merged
+   *over* whichever of the above applied.
+
+While the first fetch is in flight the provider renders `QbrSkeleton` instead of
+the page.
+
+**Things to remember about the localStorage layer:**
+
+- It is written **only when someone clicks Save in the admin panel** — not on
+  every render. An earlier version wrote on every render, which meant a plain
+  visit created a full override and would have masked the API's data
+  permanently from the first page load onward.
+- While an override exists it **wins over the server**, so live data can be
+  masked. `AdminPanel` shows a "Reset to live data" button (two-step) whenever
+  `hasLocalOverrides` is true. This is the interim design; the intended end
+  state is to expire overrides against `meta.generatedAt` once HubSpot is live.
+- Editing `src/data/account.ts` may appear to do nothing, both because the API
+  now supplies the data and because a saved override may be on top. Clear the
+  `qbr-<customerId>` key or use a private window when verifying a data change.
+- The merge is shallow, so *new top-level fields* fall through correctly, but
+  changes nested inside an existing field do not.
 
 ## Known gaps and rough edges
 
@@ -145,6 +179,52 @@ receive props.
   or off array position (`FutureState.tsx`). Renaming or reordering content
   silently changes or drops icons.
 - `README.md` is still the unedited Lovable template.
+
+## Before pushing: `npm run verify`
+
+**`vercel dev` is not equivalent to the real build. Run `npm run verify`
+before every push.**
+
+```bash
+npm run verify
+```
+
+It runs, in order: `typecheck` -> `test` -> `build:vercel`
+(`vercel build --prod`) -> `smoke:api` (loads and invokes the built function).
+It needs you to be logged into the Vercel CLI. `lint` is deliberately not in
+the chain because it currently exits 1 on pre-existing errors in generated
+files; run it separately.
+
+### Why this is required
+
+On 2026-09-04 a push shipped a serverless function that returned 500 on every
+request:
+
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/var/task/src/data/account'
+  imported from /var/task/api/account.js
+```
+
+`package.json` sets `"type": "module"`, so `api/account.ts` compiles to an ES
+module, and Node's ESM loader will not resolve an *extensionless* relative
+import at runtime. **Relative imports in `api/` must end in `.js`** (TypeScript
+maps that specifier back to the `.ts` source).
+
+Three separate things hid this, and each now has a guard:
+
+| What hid it | Guard now in place |
+|---|---|
+| `vercel dev` resolves extensionless imports happily, so the function worked in every local test | `build:vercel` runs the real production build |
+| `vercel build` **exits 0** — the failure is at *runtime*, not build time, so a green build proves nothing | `smoke:api` loads and invokes the built artifact, which is where the error actually fires |
+| `tsconfig.api.json` used `"moduleResolution": "bundler"`, which permits extensionless imports; Vercel compiles functions with `nodenext`, which does not | `tsconfig.api.json` now uses `nodenext`, so `npm run typecheck` fails on a missing extension |
+
+The lesson generalises: **a green build is not evidence a function runs.** Any
+new file under `api/` should get a corresponding check in
+`scripts/smoke-api.mjs`.
+
+Note `tsconfig.api.json` uses `//` comments (valid in tsconfig), but a `"//"`
+*key* inside `compilerOptions` is rejected with TS5023 - same trap as
+`vercel.json` rejecting a `comment` key.
 
 ## Deployment config (`vercel.json`)
 
