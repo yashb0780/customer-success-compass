@@ -1,4 +1,5 @@
 import { useQbr } from "@/contexts/QbrContext";
+import SectionSourceNote from "@/components/qbr/SectionSourceNote";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Layers, TrendingUp } from "lucide-react";
@@ -11,7 +12,10 @@ export default function FeatureAdoption() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-foreground">Feature Adoption</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-lg font-semibold text-foreground">Feature Adoption</h3>
+        <SectionSourceNote section="features" />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex items-center gap-4 rounded-lg border bg-card p-5">

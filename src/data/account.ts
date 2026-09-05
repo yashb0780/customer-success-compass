@@ -4,6 +4,7 @@ import type { QbrData } from "../types/qbr.js";
 
 export const accountData: QbrData = {
   customerName: "Acme Corp",
+  customerDomain: "acme.com",
   customerLogoUrl: "",
   qbrTitle: "Quarterly Business Review",
   quarter: "Q1 2026",
@@ -194,6 +195,16 @@ export const accountData: QbrData = {
 
   // Trailing note in the page footer (was hardcoded in QbrDashboard.tsx).
   footerNote: "Confidential",
+
+  // Where each sourced section came from. Everything is hand-entered today, so
+  // there is no sourceDate to record yet; the extraction pipeline will set both
+  // the kind and the source date.
+  provenance: {
+    features: { kind: "manual" },
+    integrations: { kind: "manual" },
+    roadmap: { kind: "manual" },
+    newFeatures: { kind: "manual" },
+  },
 
   adminPassword: "qbr2026",
 };

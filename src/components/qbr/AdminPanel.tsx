@@ -15,6 +15,22 @@ const statusOptions: { value: FeatureStatus; label: string }[] = [
   { value: "upcoming", label: "Upcoming" },
 ];
 
+/**
+ * Store one spelling per customer, so a lookup against internal records has a
+ * chance of matching: "https://www.Acme.com/about" and "acme.com" are the same
+ * customer. Deliberately lenient — a rejected input mid-QBR-prep is worse than
+ * a slightly odd one, so this normalises rather than validates.
+ */
+function normalizeDomain(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//, "") // scheme
+    .replace(/^www\./, "")
+    .replace(/[/?#].*$/, "") // path, query, fragment
+    .replace(/\.+$/, ""); // trailing dots
+}
+
 const teamStatusOptions: { value: TeamStatus; label: string }[] = [
   { value: "active", label: "Active" },
   { value: "moderate", label: "Moderate" },
@@ -132,6 +148,18 @@ export default function AdminPanel() {
         {/* Basic Info */}
         <Card><CardHeader><CardTitle className="text-lg">Basic Info</CardTitle></CardHeader><CardContent className="space-y-3">
           <div><Label>Customer Name</Label><Input value={draft.customerName} onChange={(e) => update("customerName", e.target.value)} /></div>
+          <div>
+            <Label>Customer Domain</Label>
+            <Input
+              value={draft.customerDomain ?? ""}
+              placeholder="acme.com"
+              onChange={(e) => update("customerDomain", e.target.value)}
+              onBlur={(e) => update("customerDomain", normalizeDomain(e.target.value))}
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Used to find this customer's records. Not shown on the page.
+            </p>
+          </div>
           <div><Label>Logo URL</Label><Input value={draft.customerLogoUrl} onChange={(e) => update("customerLogoUrl", e.target.value)} /></div>
           <div><Label>QBR Title</Label><Input value={draft.qbrTitle} onChange={(e) => update("qbrTitle", e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">

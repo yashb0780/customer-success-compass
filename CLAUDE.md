@@ -69,6 +69,8 @@ src/
   components/
     qbr/                      one file per section of the QBR page
       QbrSkeleton.tsx         loading placeholder shown while the fetch is in flight
+      DataSourceBadge.tsx     page-level: how fresh/trustworthy the whole page is
+      SectionSourceNote.tsx   section-level, ADMIN ONLY: where a section came from
     ui/                       shadcn primitives — generated, don't hand-edit
     NavLink.tsx               router NavLink wrapper (currently unused)
   lib/
@@ -184,6 +186,77 @@ reason while the fallback was in fact broken.
   `qbr-<customerId>` key or use a private window when verifying a data change.
 - The merge is shallow, so *new top-level fields* fall through correctly, but
   changes nested inside an existing field do not.
+
+## Customer domain and content provenance
+
+### `customerDomain`
+
+`QbrData.customerDomain` (e.g. `"acme.com"`) is an **identifier**, edited in the
+admin panel under Basic Info between Customer Name and Logo URL. It is never
+rendered on the customer-facing page. It is normalised on blur — scheme, `www.`,
+path, query and trailing dots stripped, lowercased — so one customer has one
+spelling and a lookup has a chance of matching.
+
+**It is deliberately not a source of tech-stack information.** Services like
+BuiltWith or Clearbit infer a stack from public web signals: DNS records, page
+markup, job ads. That describes a marketing site, and it goes stale. It says
+nothing about what a customer runs internally, which is what a QBR is about.
+The domain is for finding a customer's *internal* records — CRM deal notes,
+customer success plans, internal knowledge base docs. Do not wire a
+public-web-inference vendor into this field.
+
+### `provenance`
+
+`QbrData.provenance` records where each sourced section's content came from,
+keyed by `SourcedSection` (`features`, `integrations`, `roadmap`,
+`newFeatures`). Everything is `{ kind: "manual" }` today; the extraction
+pipeline will populate the rest.
+
+`ContentProvenance` carries two dates and they mean different things:
+
+- **`sourceDate`** — when the source material was written. This is the one
+  displayed, and the only one staleness is measured against.
+- **`extractedAt`** — when extraction ran. Bookkeeping; never displayed.
+
+Conflating them defeats the purpose: an eighteen-month-old note extracted this
+morning is still eighteen months stale, and stale internal context is exactly
+the problem this is meant to solve.
+
+### `SectionSourceNote`
+
+Renders on the four sourced section headings. **Admin mode only** — it returns
+null unless `?admin` is in the URL, the same gate `QbrDashboard.tsx` uses for
+the admin panel. It answers a CSM's question while preparing a QBR, not a
+customer's while reading one: "Manual" beside four headings tells a customer
+nothing useful. `DataSourceBadge` remains the customer-facing honesty signal.
+Revisit this once real sources exist and it reads "From deal notes, Mar 2026",
+which is a trust signal rather than an admission.
+
+| Situation | Shows |
+|---|---|
+| Manual (everything today) | `Manual` |
+| Sourced, under 12 months | `From deal notes, Jun 2026` |
+| Sourced, 12 months or older | ● `From success plan, Nov 2024` (amber) |
+| Sourced, no date | ● `From internal docs, date unknown` (amber) |
+
+An undated extracted source is flagged because unknown recency is itself a
+risk — you cannot tell whether it is current.
+
+It is quieter than `DataSourceBadge` on purpose: plain text rather than a
+bordered pill, in the content rather than the page chrome, and a dot only when
+there is something to act on. Four grey dots down the page would be noise.
+
+Two implementation notes worth keeping:
+
+- Dates are parsed with a local-time parser, not `new Date(iso)`. A date-only
+  string like `"2026-03-01"` is parsed by `Date` as UTC midnight, which renders
+  as the *previous month* in any negative-offset timezone.
+- The four headings are wrapped in
+  `flex flex-wrap items-center justify-between gap-3`, matching the pattern
+  already used by `TeamAgentOverview.tsx`. Verified against the previous build:
+  heading `x`, `y`, `height` and the total page height are unchanged; only the
+  headings' box width changes from full-width to content-width, which has no
+  visual effect. On a narrow screen the note wraps below the heading.
 
 ## Known gaps and rough edges
 

@@ -85,6 +85,47 @@ export interface AgentTeam {
   icon?: IconName;
 }
 
+/* ------------------------------------------------------------------------ *
+ * Content provenance
+ *
+ * Says where a section's content came from. Built for the extraction pipeline:
+ * read unstructured internal context (CRM deal notes, success plans, internal
+ * docs), pull structured content out of it, let the CSM edit the result.
+ * ------------------------------------------------------------------------ */
+
+export type ContentSourceKind =
+  | "manual"        // typed by hand in the admin panel
+  | "deal-notes"    // CRM deal / opportunity notes
+  | "success-plan"  // customer success plan
+  | "internal-doc"  // internal knowledge base or product doc
+  | "hubspot";      // structured HubSpot fields
+
+export interface ContentProvenance {
+  kind: ContentSourceKind;
+
+  /**
+   * The specific source, e.g. "Q1 renewal deal notes". Shown in the tooltip
+   * rather than inline, so the indicator stays short.
+   */
+  label?: string;
+
+  /**
+   * ISO date of the SOURCE MATERIAL — when the note was written, NOT when we
+   * read it. This is the date that is displayed and the one staleness is
+   * measured against. An eighteen-month-old note extracted this morning is
+   * still eighteen months stale, which is the whole point of tracking this.
+   */
+  sourceDate?: string;
+
+  /** ISO timestamp of when extraction ran. Bookkeeping only; never displayed. */
+  extractedAt?: string;
+}
+
+/** Sections whose content can come from an extracted source. */
+export type SourcedSection = "features" | "integrations" | "roadmap" | "newFeatures";
+
+export type ProvenanceMap = Partial<Record<SourcedSection, ContentProvenance>>;
+
 /** One link in the sticky nav bar. `id` must match a section's DOM id. */
 export interface NavItem {
   id: string;
@@ -113,6 +154,14 @@ export interface FutureStateContent {
 
 export interface QbrData {
   customerName: string;
+  /**
+   * The customer's web domain, e.g. "acme.com". An IDENTIFIER used to find
+   * their internal records — deal notes, success plans, KB docs. It is never
+   * rendered on the customer-facing page, and it is deliberately NOT a source
+   * of tech-stack information: public web signals describe a marketing site,
+   * not what a customer runs internally.
+   */
+  customerDomain: string;
   customerLogoUrl: string;
   qbrTitle: string;
   quarter: string;
@@ -154,6 +203,9 @@ export interface QbrData {
   quarterOptions: string[];
   /** Trailing note in the page footer, e.g. "Confidential". */
   footerNote: string;
+
+  /** Where each sourced section's content came from. See ContentProvenance. */
+  provenance: ProvenanceMap;
 
   adminPassword: string;
 }

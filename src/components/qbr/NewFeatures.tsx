@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQbr } from "@/contexts/QbrContext";
+import SectionSourceNote from "@/components/qbr/SectionSourceNote";
 import { cn } from "@/lib/utils";
 import { FeatureStatus } from "@/types/qbr";
 import { X } from "lucide-react";
@@ -21,7 +22,10 @@ export default function NewFeatures() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-foreground">New Feature Releases</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-lg font-semibold text-foreground">New Feature Releases</h3>
+        <SectionSourceNote section="newFeatures" />
+      </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {data.newFeatures.map((f) => {
           const isFlipped = flippedCard === f.title;

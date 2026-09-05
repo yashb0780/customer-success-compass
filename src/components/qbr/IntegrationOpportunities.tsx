@@ -1,4 +1,5 @@
 import { useQbr } from "@/contexts/QbrContext";
+import SectionSourceNote from "@/components/qbr/SectionSourceNote";
 import { Plug, Mail, BarChart3, MessageSquare, Bug, TrendingUp, Headphones, Share2, Layers } from "lucide-react";
 import { Integration, IconName } from "@/types/qbr";
 
@@ -51,7 +52,10 @@ export default function IntegrationOpportunities() {
             <Layers className="h-4 w-4 text-muted-foreground" />
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Integrations</p>
           </div>
-          <h2 className="text-2xl font-semibold text-foreground">Tech Stack & Integrations</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-2xl font-semibold text-foreground">Tech Stack & Integrations</h2>
+            <SectionSourceNote section="integrations" />
+          </div>
         </div>
 
         <div className="space-y-4">

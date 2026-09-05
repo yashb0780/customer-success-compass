@@ -78,6 +78,16 @@ check("CDN caches but browser revalidates",
     (ok.headers["cache-control"] ?? "").includes("s-maxage="),
   ok.headers["cache-control"]);
 
+check("payload carries customerDomain", typeof ok.body?.data?.customerDomain === "string",
+  JSON.stringify(ok.body?.data?.customerDomain));
+check(
+  "payload carries provenance for all four sourced sections",
+  ["features", "integrations", "roadmap", "newFeatures"].every(
+    (k) => typeof ok.body?.data?.provenance?.[k]?.kind === "string",
+  ),
+  JSON.stringify(ok.body?.data?.provenance),
+);
+
 const acme = await call({ method: "GET", query: { id: "acme" } });
 check("?id=acme echoes the customer id", acme.body?.meta?.customerId === "acme");
 
