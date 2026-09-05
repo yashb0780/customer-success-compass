@@ -205,6 +205,4 @@ export const accountData: QbrData = {
     roadmap: { kind: "manual" },
     newFeatures: { kind: "manual" },
   },
-
-  adminPassword: "qbr2026",
 };

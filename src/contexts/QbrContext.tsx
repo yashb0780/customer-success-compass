@@ -24,8 +24,13 @@ interface QbrContextType {
   resetToLiveData: () => void;
   /** True when the API could not be reached and the bundled copy is showing. */
   isFallback: boolean;
-  isAdmin: boolean;
-  setIsAdmin: (v: boolean) => void;
+  /**
+   * Whether the editor overlay is open. This is NOT authentication — there is
+   * none. The editor is reachable by anyone who adds ?admin to the URL. See
+   * "Known gaps" in CLAUDE.md.
+   */
+  isEditorOpen: boolean;
+  setEditorOpen: (v: boolean) => void;
 }
 
 const QbrContext = createContext<QbrContextType | null>(null);
@@ -45,7 +50,8 @@ function readOverrides(storageKey: string): QbrData | null {
 export function QbrProvider({ customerId, children }: { customerId: string; children: ReactNode }) {
   const storageKey = `qbr-${customerId}`;
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  // Open by default: the overlay only renders when ?admin is in the URL.
+  const [isEditorOpen, setEditorOpen] = useState(true);
   const [overrides, setOverrides] = useState<QbrData | null>(() => readOverrides(storageKey));
 
   // Switching customer means a different set of saved edits.
@@ -130,11 +136,11 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
             hasLocalOverrides: overrides !== null,
             resetToLiveData,
             isFallback,
-            isAdmin,
-            setIsAdmin,
+            isEditorOpen,
+            setEditorOpen,
           }
         : null,
-    [data, query.data?.meta, setData, overrides, resetToLiveData, isFallback, isAdmin],
+    [data, query.data?.meta, setData, overrides, resetToLiveData, isFallback, isEditorOpen],
   );
 
   // Every hook above runs unconditionally; only the render branches.

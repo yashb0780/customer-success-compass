@@ -88,8 +88,20 @@ check(
   JSON.stringify(ok.body?.data?.provenance),
 );
 
-const acme = await call({ method: "GET", query: { id: "acme" } });
-check("?id=acme echoes the customer id", acme.body?.meta?.customerId === "acme");
+const demo = await call({ method: "GET", query: { id: "default" } });
+check("?id=default echoes the customer id", demo.body?.meta?.customerId === "default");
+
+// Guessable ids must be rejected: this is what stops one customer finding
+// another's QBR by editing the URL.
+for (const guessable of ["acme", "globex", "customer1"]) {
+  const r = await call({ method: "GET", query: { id: guessable } });
+  check(`guessable id "${guessable}" is rejected`, r.statusCode === 400, `got ${r.statusCode}`);
+}
+const minted = await call({ method: "GET", query: { id: "gtuydglmatr0gnz5rop9tdigo" } });
+check("a minted id is accepted but has no account yet (404)", minted.statusCode === 404,
+  `got ${minted.statusCode}`);
+check("no adminPassword anywhere in the response",
+  !JSON.stringify(ok.body).includes("adminPassword"));
 
 const bad = await call({ method: "GET", query: { id: "bad id!" } });
 check("a malformed id is rejected with 400", bad.statusCode === 400, `got ${bad.statusCode}`);

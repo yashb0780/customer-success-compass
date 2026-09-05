@@ -206,8 +206,6 @@ export interface QbrData {
 
   /** Where each sourced section's content came from. See ContentProvenance. */
   provenance: ProvenanceMap;
-
-  adminPassword: string;
 }
 
 /* ------------------------------------------------------------------------ *

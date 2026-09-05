@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.api.json",
     "build:vercel": "npx vercel build --prod --yes",
     "smoke:api": "node scripts/smoke-api.mjs",
-    "verify": "npm run typecheck && npm test && npm run build:vercel && npm run smoke:api"
+    "verify": "npm run typecheck && npm test && npm run build:vercel && npm run smoke:api",
+    "new-account-id": "node scripts/new-account-id.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

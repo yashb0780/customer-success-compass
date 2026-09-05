@@ -23,14 +23,26 @@ import type {
   QbrData,
 } from "../src/types/qbr.js";
 
-/** Used when the caller does not pass an id — the single account we serve today. */
-const DEFAULT_CUSTOMER_ID = "default";
+/**
+ * The one public, deliberately-guessable id. It serves ONLY the fictional Acme
+ * demo account, which contains no real customer data.
+ */
+const DEMO_ACCOUNT_ID = "default";
 
 /**
- * Ids we will accept. Deliberately strict: this value will eventually be used
- * to look a record up in HubSpot, so it should never carry anything exotic.
+ * Real accounts use a minted, unguessable id (mint one with
+ * `npm run new-account-id`). 24+ base36 characters is ~124 bits of entropy, so
+ * the id cannot be found by guessing "acme", "globex" and so on.
+ *
+ * This is a capability URL, NOT authentication: anyone holding the link can
+ * read that account. It stops customers discovering EACH OTHER's QBRs by
+ * editing the URL. It does not stop a leaked link being used. See CLAUDE.md.
  */
-const CUSTOMER_ID_PATTERN = /^[a-zA-Z0-9_-]{1,64}$/;
+const ACCOUNT_ID_PATTERN = /^[a-z0-9]{24,64}$/;
+
+function isAcceptableAccountId(id: string): boolean {
+  return id === DEMO_ACCOUNT_ID || ACCOUNT_ID_PATTERN.test(id);
+}
 
 /**
  * Cache at Vercel's CDN, not in the visitor's browser.
@@ -56,7 +68,13 @@ interface LoadedAccount {
  * source: "hubspot". Returning null means "no such customer" (404).
  */
 async function loadAccount(customerId: string): Promise<LoadedAccount | null> {
-  return { data: accountData, source: "static" };
+  if (customerId === DEMO_ACCOUNT_ID) {
+    return { data: accountData, source: "static" };
+  }
+  // There is no account registry yet, so a well-formed id for a real account
+  // resolves to nothing. Returning the demo account here instead would serve
+  // fictional Acme numbers under a real customer's URL.
+  return null;
 }
 
 function sendError(
@@ -79,14 +97,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // A repeated query string (?id=a&id=b) arrives as an array; take the first.
   const rawId = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
-  const customerId = rawId?.trim() || DEFAULT_CUSTOMER_ID;
+  const customerId = rawId?.trim() || DEMO_ACCOUNT_ID;
 
-  if (!CUSTOMER_ID_PATTERN.test(customerId)) {
+  if (!isAcceptableAccountId(customerId)) {
     return sendError(
       res,
       400,
       "invalid_customer_id",
-      "Customer id must be 1-64 characters of letters, numbers, hyphens or underscores.",
+      "Account id must be a minted 24-64 character identifier. Short, guessable ids are rejected so that one customer cannot find another's QBR by editing the URL.",
     );
   }
 

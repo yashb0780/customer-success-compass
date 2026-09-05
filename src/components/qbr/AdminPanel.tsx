@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Lock, Save, X, Plus, Trash2, RotateCcw } from "lucide-react";
+import { Save, X, Plus, Trash2, RotateCcw, Pencil } from "lucide-react";
 
 const statusOptions: { value: FeatureStatus; label: string }[] = [
   { value: "live", label: "Live" },
@@ -39,35 +39,15 @@ const teamStatusOptions: { value: TeamStatus; label: string }[] = [
 ];
 
 export default function AdminPanel() {
-  const { data, setData, isAdmin, setIsAdmin, hasLocalOverrides, resetToLiveData } = useQbr();
+  const { data, setData, isEditorOpen, setEditorOpen, hasLocalOverrides, resetToLiveData } = useQbr();
   const impactTagOptions = data.impactTagOptions ?? [];
   // Quarter dropdown labels reuse the roadmap group titles, e.g. "Q1 2026 (This Quarter)".
   const quarterOptions = (data.quarterOptions ?? []).map((value) => ({
     value,
     label: `${value} (${(data.roadmapGroups ?? []).find((g) => g.matchQuarters.includes(value))?.title ?? ""})`,
   }));
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   const [draft, setDraft] = useState<QbrData>(data);
-
-  if (!isAdmin) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <Card className="w-72 shadow-lg">
-          <CardContent className="p-4 space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground"><Lock className="h-4 w-4" /> Admin Access</div>
-            <Input type="password" placeholder="Enter password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
-            {error && <p className="text-xs text-destructive">{error}</p>}
-            <Button size="sm" className="w-full" onClick={() => {
-              if (password === data.adminPassword) { setIsAdmin(true); setDraft(data); }
-              else setError("Incorrect password");
-            }}>Unlock</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const update = <K extends keyof QbrData>(key: K, val: QbrData[K]) => setDraft({ ...draft, [key]: val });
 
@@ -111,14 +91,24 @@ export default function AdminPanel() {
     update("agentTeams", (draft.agentTeams ?? []).filter((_, i) => i !== index));
   };
 
-  const save = () => { setData(draft); setIsAdmin(false); };
+  if (!isEditorOpen) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button size="sm" variant="outline" className="shadow-lg" onClick={() => { setDraft(data); setEditorOpen(true); }}>
+          <Pencil className="mr-1 h-3.5 w-3.5" /> Edit QBR
+        </Button>
+      </div>
+    );
+  }
+
+  const save = () => { setData(draft); setEditorOpen(false); };
 
   // Two-step so a stray click cannot wipe someone's edits mid-presentation.
   const handleReset = () => {
     if (!confirmReset) { setConfirmReset(true); return; }
     resetToLiveData();
     setConfirmReset(false);
-    setIsAdmin(false);
+    setEditorOpen(false);
   };
 
   return (
@@ -134,7 +124,7 @@ export default function AdminPanel() {
               </Button>
             )}
             <Button onClick={save}><Save className="mr-1 h-4 w-4" /> Save</Button>
-            <Button variant="ghost" onClick={() => { setConfirmReset(false); setIsAdmin(false); }}><X className="h-4 w-4" /></Button>
+            <Button variant="ghost" onClick={() => { setConfirmReset(false); setEditorOpen(false); }}><X className="h-4 w-4" /></Button>
           </div>
         </div>
 
@@ -275,14 +265,9 @@ export default function AdminPanel() {
           ))}
         </CardContent></Card>
 
-        {/* Password */}
-        <Card><CardHeader><CardTitle className="text-lg">Admin Password</CardTitle></CardHeader><CardContent>
-          <Input value={draft.adminPassword} onChange={(e) => update("adminPassword", e.target.value)} />
-        </CardContent></Card>
-
         <div className="flex gap-2 pb-8">
           <Button onClick={save} className="flex-1"><Save className="mr-1 h-4 w-4" /> Save Changes</Button>
-          <Button variant="outline" onClick={() => setIsAdmin(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
         </div>
       </div>
     </div>

@@ -260,13 +260,23 @@ Two implementation notes worth keeping:
 
 ## Known gaps and rough edges
 
-- **The admin password gate is client-side only and is a known security gap to
-  fix later.** The panel appears when `?admin` is in the URL, and it compares
-  the typed password against `data.adminPassword`, which ships inside the
-  JavaScript bundle and is also readable and writable in localStorage. It keeps
-  a casual viewer out of the editor; it is not access control. Do not treat it
-  as protecting anything, and do not add more behind it, until it is replaced
-  with a server-side check.
+- **There is no authentication. The editor is open to anyone with the URL.**
+  The password gate was removed on 2026-09-05: `adminPassword` shipped in the
+  bundle *and* in the public API response, so it protected nothing and its
+  presence implied a security property that did not exist. Removing it deleted
+  a bug, not a defence. The editor overlay opens whenever `?admin` is in the
+  URL. `isEditorOpen` in `QbrContext` means "overlay is open", **not**
+  "authenticated". Treat the whole app as single-user and internal, and do not
+  put anything behind `?admin` that would matter if a stranger opened it.
+- **Account ids are capability URLs, not access control.** `/api/account`
+  accepts the public demo id `default` (fictional Acme data only) and otherwise
+  requires a minted 24-64 character base36 id — mint one with
+  `npm run new-account-id`. Guessable ids like `acme` are rejected with 400.
+  This stops one customer discovering another's QBR by editing the URL. It does
+  **not** stop a leaked or forwarded link being used, and `/api/account` still
+  requires no credentials. Anyone holding the link can read that account, so
+  share it like a password. Real authentication is still outstanding, and it is
+  the thing to fix before genuinely sensitive extracted content lands here.
 - **`UserEngagement.tsx` renders nowhere, but the admin panel still edits it.**
   The component is not imported by any file, so the `licensedSeats`,
   `engagement` (MAU/WAU/DAU) and `trendData` fields never appear on the page —
