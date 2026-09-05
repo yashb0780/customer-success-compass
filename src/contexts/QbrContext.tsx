@@ -58,11 +58,29 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
     queryFn: ({ signal }) => fetchAccount(customerId, signal),
     staleTime: 5 * 60 * 1000,
     retry: 1,
+    retryDelay: 800,
+    // Ask React Query not to pause a failing query. Note this is NOT sufficient
+    // on its own: with 5.83.0 a failing query was observed sitting at
+    // fetchStatus "paused" / isError false indefinitely even with this set and
+    // with both navigator.onLine and onlineManager.isOnline() reporting true.
+    // The fallback condition below is what actually protects the page.
+    networkMode: "always",
   });
 
   // If the API is unreachable we fall back to the copy compiled into the page,
   // so a QBR being presented live never collapses to an error screen.
-  const isFallback = query.isError;
+  // A failing query does not reliably reach the "error" state: React Query may
+  // PAUSE it instead (fetchStatus "paused"), leaving isError false and status
+  // "pending" indefinitely, which parks the page on the loading skeleton
+  // forever. Treat a stalled-after-failing query the same as a failed one —
+  // sitting on a skeleton is never the right answer when a usable copy is
+  // compiled into the page.
+  const stalled = query.isError || (query.fetchStatus === "paused" && query.failureCount > 0);
+
+  // "Fallback" specifically means we are showing the bundled copy. If a refetch
+  // fails but we already have server data, we are not on the fallback — we are
+  // on the last good response — and the badge should not claim otherwise.
+  const isFallback = query.data === undefined && stalled;
   const base: QbrData | undefined = query.data?.data ?? (isFallback ? accountData : undefined);
 
   const data = useMemo<QbrData | null>(() => {

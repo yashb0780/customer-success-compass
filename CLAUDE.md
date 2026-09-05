@@ -135,6 +135,40 @@ The provider layers three things, in this order:
 While the first fetch is in flight the provider renders `QbrSkeleton` instead of
 the page.
 
+`DataSourceBadge` (nav bar and footer) says which of these applied. Four states,
+**first match wins** — the order matters:
+
+| Condition | Shows | Why |
+|---|---|---|
+| `isFallback` | ● Offline copy (amber) | API unreachable; figures may be stale |
+| `hasLocalOverrides` | ● Local edits (grey) | Hand-edited in this browser |
+| `meta.source !== "hubspot"` | ● Sample data (grey) | Untouched demo account |
+| otherwise | Updated 2:31 PM | Live, from `meta.generatedAt` |
+
+Overrides are checked **before** source deliberately: once a CSM has typed real
+content into the admin panel the payload is still `source: "static"`, and
+labelling a real curated QBR "Sample data" would be wrong.
+
+### The fallback depends on the query reaching an error state
+
+`isFallback` is not simply `query.isError`. React Query may **pause** a failing
+query (`fetchStatus: "paused"`) rather than failing it, which leaves `isError`
+false and `status` `"pending"` indefinitely — parking the page on the loading
+skeleton forever, which is worse than the error screen the fallback exists to
+prevent. Observed with `@tanstack/react-query` 5.83.0 *even with*
+`networkMode: "always"` set and both `navigator.onLine` and
+`onlineManager.isOnline()` reporting `true`.
+
+So the provider treats a stalled-after-failing query the same as a failed one,
+and `fetchAccount` bounds every request with an 8-second timeout so a server
+that accepts a connection and then hangs cannot park the page either.
+
+**When testing the fallback, always use a fresh origin (a new localhost port).**
+Pointing an already-visited origin at a failing API does *not* test the fallback:
+`stale-while-revalidate` means the browser serves its cached 200 and the page
+renders from that. An earlier fallback "verification" passed for exactly this
+reason while the fallback was in fact broken.
+
 **Things to remember about the localStorage layer:**
 
 - It is written **only when someone clicks Save in the admin panel** — not on

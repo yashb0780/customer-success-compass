@@ -6,6 +6,14 @@
  */
 import type { AccountErrorResponse, AccountResponse } from "@/types/qbr";
 
+/**
+ * How long to wait before giving up and letting the page fall back to the
+ * bundled copy. A QBR is presented live, so an unbounded wait is worse than
+ * slightly stale content: without this, a server that accepts the connection
+ * and then hangs would park the page on the loading skeleton indefinitely.
+ */
+const REQUEST_TIMEOUT_MS = 8000;
+
 /** A failed account fetch, carrying enough detail to tell the user why. */
 export class AccountFetchError extends Error {
   readonly status: number;
@@ -28,13 +36,39 @@ export async function fetchAccount(customerId?: string, signal?: AbortSignal): P
     ? `/api/account?id=${encodeURIComponent(customerId)}`
     : "/api/account";
 
+  // Bound the request ourselves. Written with AbortController rather than
+  // AbortSignal.timeout/any so it works in older browsers too.
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, REQUEST_TIMEOUT_MS);
+  const forwardAbort = () => controller.abort();
+  signal?.addEventListener("abort", forwardAbort);
+
   let res: Response;
   try {
-    res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+    res = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    });
   } catch (err) {
-    // Offline, DNS failure, request aborted — never reached the server.
-    if (err instanceof DOMException && err.name === "AbortError") throw err;
+    // The caller cancelled (React Query unmounting or refetching): propagate
+    // that as-is so it is not reported to the user as a failure.
+    if (signal?.aborted) throw err;
+    if (timedOut) {
+      throw new AccountFetchError(
+        `The server did not respond within ${REQUEST_TIMEOUT_MS / 1000} seconds.`,
+        0,
+        "timeout",
+      );
+    }
+    // Offline, DNS failure, connection refused — never reached the server.
     throw new AccountFetchError("Could not reach the server.", 0, "network_error");
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", forwardAbort);
   }
 
   if (!res.ok) {

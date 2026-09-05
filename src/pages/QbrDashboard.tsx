@@ -12,6 +12,7 @@ import NewFeatures from "@/components/qbr/NewFeatures";
 import NextSteps from "@/components/qbr/NextSteps";
 import ThankYouSlide from "@/components/qbr/ThankYouSlide";
 import AdminPanel from "@/components/qbr/AdminPanel";
+import DataSourceBadge from "@/components/qbr/DataSourceBadge";
 
 export default function QbrDashboard() {
   const { data } = useQbr();
@@ -31,6 +32,7 @@ export default function QbrDashboard() {
               {n.label}
             </a>
           ))}
+          <DataSourceBadge />
         </div>
       </nav>
 
@@ -67,7 +69,7 @@ export default function QbrDashboard() {
 
       {/* Footer */}
       <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
-        Prepared for {data.customerName} · {data.quarter} · {data.footerNote}
+        Prepared for {data.customerName} · {data.quarter} · {data.footerNote} · <DataSourceBadge variant="text" />
       </footer>
 
       {typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin") && <AdminPanel />}
