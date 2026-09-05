@@ -157,3 +157,37 @@ export interface QbrData {
 
   adminPassword: string;
 }
+
+/* ------------------------------------------------------------------------ *
+ * API envelope
+ *
+ * QbrData above is the payload — the account content the page renders.
+ * AccountResponse is what /api/account actually returns: that payload plus a
+ * little context about where it came from. Keeping them separate means the
+ * page components never need to know an API exists.
+ * ------------------------------------------------------------------------ */
+
+/** Where the payload came from. "static" is the bundled demo account. */
+export type AccountSource = "static" | "hubspot";
+
+export interface AccountMeta {
+  /** The customer this payload describes; echoes back the requested id. */
+  customerId: string;
+  source: AccountSource;
+  /** ISO 8601 timestamp of when the server produced this payload. */
+  generatedAt: string;
+}
+
+/** Success body of GET /api/account. */
+export interface AccountResponse {
+  data: QbrData;
+  meta: AccountMeta;
+}
+
+/** Error body of GET /api/account. Never returned alongside `data`. */
+export interface AccountErrorResponse {
+  error: {
+    code: "invalid_customer_id" | "not_found" | "upstream_error" | "internal_error" | "method_not_allowed";
+    message: string;
+  };
+}

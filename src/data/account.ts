@@ -1,4 +1,6 @@
-import { QbrData } from "@/types/qbr";
+// Relative (not the "@/" alias) so the serverless function in api/ can import
+// this file too — that alias only exists inside the Vite build.
+import { QbrData } from "../types/qbr";
 
 export const accountData: QbrData = {
   customerName: "Acme Corp",

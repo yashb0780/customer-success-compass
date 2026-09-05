@@ -146,6 +146,74 @@ receive props.
   silently changes or drops icons.
 - `README.md` is still the unedited Lovable template.
 
+## Deployment config (`vercel.json`)
+
+`vercel.json` holds one rewrite:
+
+```json
+{ "source": "/((?!api/|@|src/|node_modules/).*)", "destination": "/index.html" }
+```
+
+**What it does.** This is a single-page app: there is only one real HTML file,
+and React Router decides what to show from the URL. Without this rule Vercel
+looks for a file at `/qbr/acme`, finds none, and returns 404 — the route worked
+in local dev but was broken in production. The rule says "serve `index.html`
+and let the app route it."
+
+**Why the exclusions.** `source` is a negative lookahead — match anything
+*except* these prefixes:
+
+| Excluded | Reason |
+|---|---|
+| `api/` | Serverless functions. Without this the fallback could serve HTML instead of running the function. |
+| `@`, `src/`, `node_modules/` | Vite dev-server paths (`/@vite/client`, `/@react-refresh`, `/src/main.tsx`, `/node_modules/.vite/…`). **Local dev only** — see below. |
+
+### Why the config has to accommodate local dev
+
+This is the confusing part, so it is worth stating plainly.
+
+**In production the catch-all is harmless**, because Vercel checks the
+filesystem before applying rewrites — the docs say *"precedence is given to the
+filesystem prior to rewrites being applied"*, and rewrites *"check the
+filesystem by default"*. A request for `/assets/index-abc.js` finds a real
+built file and never reaches the rewrite. Only URLs with no matching file —
+exactly the client-side routes — fall through to `index.html`.
+
+**Under `vercel dev` there is no built filesystem.** Vite generates modules on
+the fly at paths like `/src/main.tsx` and `/@vite/client`; no such files exist
+on disk. So the filesystem check finds nothing, the catch-all fires, and Vite's
+JavaScript is replaced by `index.html`. The browser refuses to execute HTML as a
+module script, React never boots, and you get a blank white page with failures
+on `/src/main.tsx`, `/@vite/client` and `/@react-refresh`. The API is never
+called, because nothing is running.
+
+Excluding those three prefixes fixes local dev and costs production nothing: a
+production build only ever emits `/assets/…`, `/index.html`, `/favicon.ico`,
+`/robots.txt` and `/placeholder.svg`, none of which start with `@`, `src/` or
+`node_modules/`. The only behaviour change is that a URL literally beginning
+with one of those prefixes now returns a hard 404 instead of rendering the
+app's NotFound page. No route in this app looks like that.
+
+Verified by running `vercel dev` with and without each variant: with the plain
+`/((?!api/).*)` pattern Vite's paths return `text/html` and the page is blank;
+with the exclusions they return `text/javascript`, the page renders, and
+`/api/account` is called for real. `{ "handle": "filesystem" }` does **not**
+fix it — `vercel dev` does not treat the Vite dev server as the filesystem.
+
+### `vercel.json` accepts no extra keys
+
+Both the top level and each rewrite object are `additionalProperties: false` in
+Vercel's schema, and JSON has no comment syntax, so there is nowhere in the file
+to write an explanation — a stray `comment` key fails the build with
+`Invalid vercel.json - rewrites[0] should NOT have additional property`.
+Document rewrites here instead. Allowed keys on a rewrite are `source`,
+`destination`, `has`, `missing`, `statusCode`, `env`, `transforms` and
+`respectOriginCacheControl`; `$schema` is allowed at the top level. Validate a
+change against `https://openapi.vercel.sh/vercel.json` before pushing.
+
+Note also that `has` conditions silently do not work under `vercel dev`, though
+they work when deployed — so anything relying on them cannot be tested locally.
+
 ## Security rules for this repo
 
 - **API tokens must never appear in frontend code.** Nothing in `src/` is

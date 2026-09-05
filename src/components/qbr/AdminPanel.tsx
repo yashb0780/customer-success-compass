@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Lock, Save, X, Plus, Trash2 } from "lucide-react";
+import { Lock, Save, X, Plus, Trash2, RotateCcw } from "lucide-react";
 
 const statusOptions: { value: FeatureStatus; label: string }[] = [
   { value: "live", label: "Live" },
@@ -23,7 +23,7 @@ const teamStatusOptions: { value: TeamStatus; label: string }[] = [
 ];
 
 export default function AdminPanel() {
-  const { data, setData, isAdmin, setIsAdmin } = useQbr();
+  const { data, setData, isAdmin, setIsAdmin, hasLocalOverrides, resetToLiveData } = useQbr();
   const impactTagOptions = data.impactTagOptions ?? [];
   // Quarter dropdown labels reuse the roadmap group titles, e.g. "Q1 2026 (This Quarter)".
   const quarterOptions = (data.quarterOptions ?? []).map((value) => ({
@@ -32,6 +32,7 @@ export default function AdminPanel() {
   }));
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [confirmReset, setConfirmReset] = useState(false);
   const [draft, setDraft] = useState<QbrData>(data);
 
   if (!isAdmin) {
@@ -96,16 +97,37 @@ export default function AdminPanel() {
 
   const save = () => { setData(draft); setIsAdmin(false); };
 
+  // Two-step so a stray click cannot wipe someone's edits mid-presentation.
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return; }
+    resetToLiveData();
+    setConfirmReset(false);
+    setIsAdmin(false);
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-background/95 backdrop-blur-sm">
       <div className="mx-auto max-w-3xl px-6 py-8 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-foreground">Edit QBR Data</h2>
           <div className="flex gap-2">
+            {hasLocalOverrides && (
+              <Button variant={confirmReset ? "destructive" : "outline"} onClick={handleReset}>
+                <RotateCcw className="mr-1 h-4 w-4" />
+                {confirmReset ? "Click again to discard" : "Reset to live data"}
+              </Button>
+            )}
             <Button onClick={save}><Save className="mr-1 h-4 w-4" /> Save</Button>
-            <Button variant="ghost" onClick={() => setIsAdmin(false)}><X className="h-4 w-4" /></Button>
+            <Button variant="ghost" onClick={() => { setConfirmReset(false); setIsAdmin(false); }}><X className="h-4 w-4" /></Button>
           </div>
         </div>
+
+        {hasLocalOverrides && (
+          <p className="rounded-lg border bg-card px-4 py-3 text-xs text-muted-foreground">
+            This browser has saved edits, and they are being shown instead of the data the
+            server returned. Reset to live data to discard them.
+          </p>
+        )}
 
         {/* Basic Info */}
         <Card><CardHeader><CardTitle className="text-lg">Basic Info</CardTitle></CardHeader><CardContent className="space-y-3">
