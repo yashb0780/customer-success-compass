@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 240 6% 10%;
+    --background: 30 25% 99%;
+    --foreground: 25 12% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card-foreground: 25 12% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover-foreground: 25 12% 12%;
 
-    --primary: 234 42% 46%;
+    --primary: 248 76% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 30 16% 95%;
+    --secondary-foreground: 25 12% 12%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 44%;
+    --muted: 30 16% 95%;
+    --muted-foreground: 25 7% 42%;
     /* Third text level: labels and metadata. Two levels is not a hierarchy. */
-    --subtle-foreground: 240 4% 58%;
+    --subtle-foreground: 25 7% 56%;
 
-    --accent: 240 5% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 30 16% 95%;
+    --accent-foreground: 25 12% 12%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 6% 91%;
-    --input: 240 6% 91%;
-    --ring: 234 42% 46%;
+    --border: 30 13% 89%;
+    --input: 30 13% 89%;
+    --ring: 248 76% 58%;
 
     /* Containers are soft, not sharp; anything clickable is a pill (see
        borderRadius in tailwind.config.ts). */
@@ -44,12 +44,21 @@
     /* Structure comes from borders. Shadow is for floating elements only. */
     --shadow-subtle: 0 1px 2px rgb(16 18 27 / 0.04);
 
-    --qbr-success: 142 71% 45%;
-    --qbr-warning: 38 92% 50%;
-    --qbr-danger: 0 72% 55%;
-    --qbr-info: 234 56% 58%;
+    /* Marks: dots, bars, left borders. Hues 150/36/352 are far enough apart
+       to stay distinguishable at 6px. */
+    --qbr-success: 150 65% 40%;
+    --qbr-warning: 36 96% 50%;
+    --qbr-danger: 352 76% 52%;
+    --qbr-info: 248 76% 58%;
 
-    --section-alt: 240 5% 98%;
+    /* Text: the same hues, deepened so a coloured WORD reads as type rather
+       than as a highlight. All three clear 5:1 on white; the bright marks
+       above are around 3:1 and are not safe for body text. */
+    --qbr-success-text: 150 55% 30%;
+    --qbr-warning-text: 30 75% 34%;
+    --qbr-danger-text: 352 62% 42%;
+
+    --section-alt: 30 22% 97%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -62,43 +71,48 @@
   }
 
   .dark {
-    --background: 240 6% 7%;
-    --foreground: 240 5% 92%;
+    --background: 25 8% 8%;
+    --foreground: 30 12% 92%;
 
-    --card: 240 5% 10%;
-    --card-foreground: 240 5% 92%;
+    --card: 25 8% 11%;
+    --card-foreground: 30 12% 92%;
 
-    --popover: 240 5% 10%;
-    --popover-foreground: 240 5% 92%;
+    --popover: 25 8% 11%;
+    --popover-foreground: 30 12% 92%;
 
-    --primary: 234 50% 64%;
+    --primary: 248 78% 70%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 240 5% 92%;
+    --secondary: 25 6% 17%;
+    --secondary-foreground: 30 12% 92%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 4% 56%;
-    --subtle-foreground: 240 4% 46%;
+    --muted: 25 6% 17%;
+    --muted-foreground: 25 7% 58%;
+    --subtle-foreground: 25 7% 46%;
 
-    --accent: 240 4% 16%;
-    --accent-foreground: 240 5% 92%;
+    --accent: 25 6% 17%;
+    --accent-foreground: 30 12% 92%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 234 50% 64%;
+    --border: 25 6% 20%;
+    --input: 25 6% 20%;
+    --ring: 248 78% 70%;
     --radius-control: 0.625rem;
     --shadow-subtle: 0 1px 2px rgb(0 0 0 / 0.3);
 
-    --qbr-success: 142 60% 50%;
-    --qbr-warning: 38 88% 55%;
-    --qbr-danger: 0 68% 58%;
-    --qbr-info: 234 56% 62%;
+    --qbr-success: 150 60% 46%;
+    --qbr-warning: 36 92% 56%;
+    --qbr-danger: 352 72% 60%;
+    --qbr-info: 248 78% 70%;
 
-    --section-alt: 240 5% 9%;
+    /* On dark surfaces the text variants get LIGHTER, not deeper. */
+    --qbr-success-text: 150 50% 62%;
+    --qbr-warning-text: 36 85% 62%;
+    --qbr-danger-text: 352 70% 68%;
+
+    --section-alt: 25 8% 10%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

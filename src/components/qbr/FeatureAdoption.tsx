@@ -36,10 +36,14 @@ export default function FeatureAdoption() {
           {data.features.map((f) => (
             <div key={f.name} className="flex flex-col gap-1.5 px-5 py-4 transition-colors hover:bg-muted/30">
               <p className="text-sm font-medium text-foreground leading-tight">{f.name}</p>
-              {/* Colour lives in the dot only. Coloured status TEXT was the
-                  loudest thing on a page a customer reads, and the word alone
-                  already carries the meaning for colour-blind readers. */}
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              {/* Bright dot as the mark, deep colour for the word. The word is
+                  dark enough to read as type rather than a highlight (>5:1 on
+                  white), and still carries meaning without colour. */}
+              <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium",
+                f.usage === "high" && "text-qbr-success-text",
+                f.usage === "medium" && "text-qbr-warning-text",
+                f.usage === "low" && "text-qbr-danger-text",
+              )}>
                 <span className={cn("h-1.5 w-1.5 rounded-full",
                   f.usage === "high" && "bg-qbr-success",
                   f.usage === "medium" && "bg-qbr-warning",

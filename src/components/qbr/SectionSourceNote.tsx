@@ -1,5 +1,6 @@
 import { useQbr } from "@/contexts/QbrContext";
 import { ContentSourceKind, SourcedSection } from "@/types/qbr";
+import { isAdminMode } from "@/lib/adminMode";
 
 /**
  * Small note on a section heading saying where that section's content came
@@ -55,10 +56,7 @@ function monthsSince(d: Date): number {
 export default function SectionSourceNote({ section }: { section: SourcedSection }) {
   const { data } = useQbr();
 
-  // Same gate as the admin panel itself in QbrDashboard.tsx.
-  const adminMode =
-    typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin");
-  if (!adminMode) return null;
+  if (!isAdminMode()) return null;
 
   const p = data.provenance?.[section];
   if (!p) return null;

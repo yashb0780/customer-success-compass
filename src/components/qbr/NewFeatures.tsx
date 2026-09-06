@@ -6,9 +6,9 @@ import { FeatureStatus } from "@/types/qbr";
 import { X } from "lucide-react";
 
 const statusStyles: Record<FeatureStatus, string> = {
-  live: "text-qbr-success bg-qbr-success/10",
+  live: "text-qbr-success-text bg-qbr-success/10",
   "public-beta": "text-primary bg-primary/10",
-  "private-beta": "text-qbr-warning bg-qbr-warning/10",
+  "private-beta": "text-qbr-warning-text bg-qbr-warning/10",
   upcoming: "text-muted-foreground bg-muted",
 };
 

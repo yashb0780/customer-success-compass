@@ -48,10 +48,16 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         qbr: {
+          // Marks: dots, bars, borders.
           success: "hsl(var(--qbr-success))",
           warning: "hsl(var(--qbr-warning))",
           danger: "hsl(var(--qbr-danger))",
           info: "hsl(var(--qbr-info))",
+          // Text: deeper on light, lighter on dark. Use these whenever a WORD
+          // is coloured; the marks above do not have enough contrast for type.
+          "success-text": "hsl(var(--qbr-success-text))",
+          "warning-text": "hsl(var(--qbr-warning-text))",
+          "danger-text": "hsl(var(--qbr-danger-text))",
         },
         "subtle-foreground": "hsl(var(--subtle-foreground))",
         "section-alt": "hsl(var(--section-alt))",

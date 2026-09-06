@@ -3,11 +3,14 @@ import { useQbr } from "@/contexts/QbrContext";
 import { TeamStatus, IconName } from "@/types/qbr";
 import { Shield, Users, Briefcase, Scale, DollarSign, ShoppingCart, Building } from "lucide-react";
 
+// borderColor reads the CSS variables rather than repeating literal hsl()
+// values, which previously meant a token change left these stale — and broke
+// dark mode, where the literals stayed light-mode colours.
 const statusConfig: Record<TeamStatus, { label: string; color: string; borderColor: string }> = {
-  active: { label: "Active", color: "text-qbr-success", borderColor: "hsl(142, 71%, 45%)" },
-  moderate: { label: "Moderate", color: "text-qbr-warning", borderColor: "hsl(38, 92%, 50%)" },
-  new: { label: "New", color: "text-primary", borderColor: "hsl(234, 56%, 58%)" },
-  planning: { label: "Planning", color: "text-muted-foreground", borderColor: "hsl(240, 4%, 46%)" },
+  active: { label: "Active", color: "text-qbr-success", borderColor: "hsl(var(--qbr-success))" },
+  moderate: { label: "Moderate", color: "text-qbr-warning", borderColor: "hsl(var(--qbr-warning))" },
+  new: { label: "New", color: "text-primary", borderColor: "hsl(var(--primary))" },
+  planning: { label: "Planning", color: "text-muted-foreground", borderColor: "hsl(var(--muted-foreground))" },
 };
 
 const iconsByName: Partial<Record<IconName, ReactNode>> = {

@@ -236,6 +236,9 @@ carry the design are `src/index.css` (colour, radii, shadow), `tailwind.config.t
 `fontSize` scale there restyles every existing `text-sm`/`text-xs` in the app,
 and `--radius` drives every `rounded-lg`.
 
+Colour was warmed on 2026-09-05: every grey moved from hue 240 (cool blue) to
+~27 (warm), the accent was brightened, and the status hues were pushed apart.
+
 | Token | Value | Notes |
 |---|---|---|
 | `--radius` | `0.875rem` (14px) | Containers: cards, panels, tables |
@@ -244,6 +247,29 @@ and `--radius` drives every `rounded-lg`.
 | `--primary` | `234 42% 46%` | One accent, used sparingly |
 | `--subtle-foreground` | `240 4% 58%` | Third text level for labels/metadata |
 | `--shadow-subtle` | `0 1px 2px …/0.04` | Floating elements only; borders elsewhere |
+
+**Status colours come in two sets, and the distinction matters.**
+
+| | Mark — dots, bars, borders | Text — coloured words |
+|---|---|---|
+| Success | `--qbr-success` `#24A866` | `--qbr-success-text` `#22774D` (5.5:1) |
+| Warning | `--qbr-warning` `#FA9805` | `--qbr-warning-text` `#985716` (5.7:1) |
+| Danger | `--qbr-danger` `#E22840` | `--qbr-danger-text` `#AE293A` (6.6:1) |
+
+Use the **mark** tokens for dots, bars and borders, and the **text** tokens
+whenever a word is coloured. The bright marks sit around 3:1 on white and are
+not safe for body text — the original bright green as status text was about
+2.9:1 and failed AA. On dark surfaces the text variants get *lighter* rather
+than deeper.
+
+Hues are 150 / 36 / 352 (green, clearly-orange, clearly-crimson). The previous
+amber `38` and red `0` were only 38 degrees apart, which is too close to read
+apart at 6px.
+
+Never write a literal `hsl(...)` in a component. `TeamAgentOverview` used to
+hold four hardcoded values for its left borders, which meant a token change
+left them stale and dark mode kept light-mode colours. They read
+`hsl(var(--token))` now.
 
 Two decisions worth keeping:
 

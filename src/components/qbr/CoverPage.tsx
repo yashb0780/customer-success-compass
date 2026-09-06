@@ -1,5 +1,6 @@
 import { useQbr } from "@/contexts/QbrContext";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Search } from "lucide-react";
+import { isAdminMode } from "@/lib/adminMode";
 
 /**
  * The cover.
@@ -36,6 +37,26 @@ export default function CoverPage() {
             {data.quarter} · {data.date}
           </p>
         </div>
+
+        {/* Placeholder for the extraction flow — inert for now. Admin only, so
+            a customer never sees an internal lookup control on their QBR. */}
+        {isAdminMode() && (
+          <div className="w-full max-w-md">
+            <div className="flex items-center gap-2 rounded-pill border bg-card px-4 py-2.5 text-left shadow-subtle">
+              <Search className="h-4 w-4 shrink-0 text-subtle-foreground" />
+              <input
+                type="search"
+                disabled
+                aria-label="Search by company name or domain"
+                placeholder="Search by company name or domain"
+                className="w-full bg-transparent text-sm text-foreground placeholder:text-subtle-foreground focus:outline-none disabled:cursor-not-allowed"
+              />
+            </div>
+            <p className="mt-2 text-xs text-subtle-foreground">
+              Not connected yet · only visible in admin mode
+            </p>
+          </div>
+        )}
 
         <a
           href="#agenda"
