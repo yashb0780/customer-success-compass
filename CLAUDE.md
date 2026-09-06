@@ -128,9 +128,11 @@ The provider layers three things, in this order:
 
 1. **The API response** (`AccountResponse` = `{ data: QbrData, meta }`) is the
    source of truth.
-2. **If the API fails**, it falls back to `accountData` compiled into the bundle
-   from `src/data/account.ts`, so a QBR being presented live never collapses to
-   an error screen. `meta` is `null` and `isFallback` is true in that state.
+2. **If the API is unreachable**, it may fall back to `accountData` compiled
+   into the bundle from `src/data/account.ts`, so a QBR being presented live
+   never collapses to an error screen. Two conditions gate this — see
+   "The bundled fallback is not a cache" below. `meta` is `null` and
+   `isFallback` is true in that state.
 3. **Saved admin edits** in `localStorage["qbr-<customerId>"]` are shallow-merged
    *over* whichever of the above applied.
 
@@ -150,6 +152,40 @@ the page.
 Overrides are checked **before** source deliberately: once a CSM has typed real
 content into the admin panel the payload is still `source: "static"`, and
 labelling a real curated QBR "Sample data" would be wrong.
+
+### The bundled fallback is not a cache
+
+`accountData` is **compiled into the JavaScript bundle**. Every visitor
+downloads the whole Acme dataset as part of the app — grep a production bundle
+for `sarah@vendor.io` and it is there. It is not localStorage, not a service
+worker, and not a CDN cache, so clearing site data or using a fresh browser
+does not affect it, and a server-side rejection cannot suppress it on its own.
+
+That caused a real bug: `/qbr/acme` rendered the full Acme QBR labelled
+"Offline copy" even though `/api/account?id=acme` correctly returned 400. The
+client treated *any* failure as an outage and fell back.
+
+Two rules now gate the fallback, decided by the pure, separately tested
+`decideAccountView` in `src/lib/accountView.ts`:
+
+1. **A 4xx is not an outage.** 400 and 404 are the server giving a definitive
+   answer about *this id*. Falling back would override a decision the server
+   deliberately made. Only a network failure, timeout or 5xx qualifies.
+2. **Only the demo account may use the bundled copy**, because that copy *is*
+   the demo account's content. Serving it under a minted id would show
+   fictional Acme numbers under a real customer's URL — the same mistake
+   `loadAccount` avoids on the server.
+
+Otherwise `QbrUnavailable` renders, containing **no account content at all**.
+
+Account id rules live in `src/lib/accountId.ts` and are imported by **both**
+`api/account.ts` and `QbrContext`, so the two paths cannot drift. An
+unacceptable id is never even fetched (`enabled: idIsAcceptable`).
+
+Note the status is read from `query.error ?? query.failureReason`: while React
+Query is paused between retries `error` is undefined but `failureReason` holds
+the last failure, and without it a 404 is indistinguishable from an outage —
+which is the one case allowed to fall back.
 
 ### The fallback depends on the query reaching an error state
 

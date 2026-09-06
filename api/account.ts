@@ -16,6 +16,8 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 // ERR_MODULE_NOT_FOUND. TypeScript maps the ".js" specifier back to the ".ts"
 // source. `vercel dev` tolerates the extensionless form; the real build does not.
 import { accountData } from "../src/data/account.js";
+// Shared with the browser so the two paths cannot drift apart.
+import { DEMO_ACCOUNT_ID, isAcceptableAccountId } from "../src/lib/accountId.js";
 import type {
   AccountErrorResponse,
   AccountResponse,
@@ -23,26 +25,6 @@ import type {
   QbrData,
 } from "../src/types/qbr.js";
 
-/**
- * The one public, deliberately-guessable id. It serves ONLY the fictional Acme
- * demo account, which contains no real customer data.
- */
-const DEMO_ACCOUNT_ID = "default";
-
-/**
- * Real accounts use a minted, unguessable id (mint one with
- * `npm run new-account-id`). 24+ base36 characters is ~124 bits of entropy, so
- * the id cannot be found by guessing "acme", "globex" and so on.
- *
- * This is a capability URL, NOT authentication: anyone holding the link can
- * read that account. It stops customers discovering EACH OTHER's QBRs by
- * editing the URL. It does not stop a leaked link being used. See CLAUDE.md.
- */
-const ACCOUNT_ID_PATTERN = /^[a-z0-9]{24,64}$/;
-
-function isAcceptableAccountId(id: string): boolean {
-  return id === DEMO_ACCOUNT_ID || ACCOUNT_ID_PATTERN.test(id);
-}
 
 /**
  * Cache at Vercel's CDN, not in the visitor's browser.

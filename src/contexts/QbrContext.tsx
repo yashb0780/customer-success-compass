@@ -10,7 +10,10 @@ import React, {
 import { useQuery } from "@tanstack/react-query";
 import { AccountMeta, QbrData } from "@/types/qbr";
 import { accountData } from "@/data/account";
-import { fetchAccount } from "@/lib/fetchAccount";
+import { AccountFetchError, fetchAccount } from "@/lib/fetchAccount";
+import { isAcceptableAccountId } from "@/lib/accountId";
+import { decideAccountView } from "@/lib/accountView";
+import QbrUnavailable from "@/components/qbr/QbrUnavailable";
 import QbrSkeleton from "@/components/qbr/QbrSkeleton";
 
 interface QbrContextType {
@@ -36,6 +39,10 @@ interface QbrContextType {
 const QbrContext = createContext<QbrContextType | null>(null);
 
 /** Saved admin edits for one customer, or null if this browser has none. */
+function statusOf(err: unknown): number | undefined {
+  return err instanceof AccountFetchError ? err.status : undefined;
+}
+
 function readOverrides(storageKey: string): QbrData | null {
   try {
     const saved = localStorage.getItem(storageKey);
@@ -59,7 +66,12 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
     setOverrides(readOverrides(storageKey));
   }, [storageKey]);
 
+  // A rejected id is never fetched, and — crucially — never reaches the bundled
+  // fallback below. See src/lib/accountView.ts.
+  const idIsAcceptable = isAcceptableAccountId(customerId);
+
   const query = useQuery({
+    enabled: idIsAcceptable,
     queryKey: ["account", customerId],
     queryFn: ({ signal }) => fetchAccount(customerId, signal),
     staleTime: 5 * 60 * 1000,
@@ -83,10 +95,21 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
   // compiled into the page.
   const stalled = query.isError || (query.fetchStatus === "paused" && query.failureCount > 0);
 
+  const view = decideAccountView({
+    customerId,
+    hasData: query.data !== undefined,
+    stalled,
+    // failureReason as well as error: while React Query is PAUSED between
+    // retries, `error` is undefined but `failureReason` holds the last failure.
+    // Without it a 404 is indistinguishable from an outage, and an outage is
+    // the one case allowed to fall back.
+    status: statusOf(query.error) ?? statusOf(query.failureReason),
+  });
+
   // "Fallback" specifically means we are showing the bundled copy. If a refetch
   // fails but we already have server data, we are not on the fallback — we are
   // on the last good response — and the badge should not claim otherwise.
-  const isFallback = query.data === undefined && stalled;
+  const isFallback = view.kind === "fallback";
   const base: QbrData | undefined = query.data?.data ?? (isFallback ? accountData : undefined);
 
   const data = useMemo<QbrData | null>(() => {
@@ -144,6 +167,7 @@ export function QbrProvider({ customerId, children }: { customerId: string; chil
   );
 
   // Every hook above runs unconditionally; only the render branches.
+  if (view.kind === "unavailable") return <QbrUnavailable reason={view.reason} />;
   if (!value) return <QbrSkeleton />;
 
   return <QbrContext.Provider value={value}>{children}</QbrContext.Provider>;
