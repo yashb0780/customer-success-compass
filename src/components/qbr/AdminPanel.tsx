@@ -128,7 +128,7 @@ export default function AdminPanel() {
   if (!isEditorOpen) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
-        <Button size="sm" variant="outline" className="shadow-lg" onClick={() => { setDraft(data); setEditorOpen(true); }}>
+        <Button size="sm" variant="outline" className="shadow-subtle" onClick={() => { setDraft(data); setEditorOpen(true); }}>
           <Pencil className="mr-1 h-3.5 w-3.5" /> Edit QBR
         </Button>
       </div>
@@ -146,10 +146,10 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto max-w-3xl px-6 py-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-foreground">Edit QBR Data</h2>
+    <div className="fixed inset-0 z-50 overflow-auto bg-background">
+      <div className="sticky top-0 z-10 border-b bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4">
+          <h2 className="text-lg font-semibold text-foreground">Edit QBR</h2>
           <div className="flex gap-2">
             {hasLocalOverrides && (
               <Button variant={confirmReset ? "destructive" : "outline"} onClick={handleReset}>
@@ -158,19 +158,31 @@ export default function AdminPanel() {
               </Button>
             )}
             <Button onClick={save}><Save className="mr-1 h-4 w-4" /> Save</Button>
-            <Button variant="ghost" onClick={() => { setConfirmReset(false); setEditorOpen(false); }}><X className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => { setConfirmReset(false); setEditorOpen(false); }}><X className="h-4 w-4" /></Button>
           </div>
         </div>
+      </div>
+
+      <div className="mx-auto max-w-3xl space-y-5 px-6 py-8">
 
         {hasLocalOverrides && (
-          <p className="rounded-lg border bg-card px-4 py-3 text-xs text-muted-foreground">
+          <p className="rounded-lg border bg-card px-5 py-3.5 text-xs text-muted-foreground">
             This browser has saved edits, and they are being shown instead of the data the
             server returned. Reset to live data to discard them.
           </p>
         )}
 
-        {/* Basic Info */}
-        <Card><CardHeader><CardTitle className="text-lg">Basic Info</CardTitle></CardHeader><CardContent className="space-y-3">
+        {/* Customer & sources — the primary action. Entering a domain looks the
+            customer up across HubSpot and Gong and drafts the Deep Dive, so it
+            leads rather than sitting among the other fields. */}
+        <Card className="border-foreground/15">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Customer &amp; sources</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Enter the domain to pull this customer&rsquo;s CRM notes and calls.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
           <div><Label>Customer Name</Label><Input value={draft.customerName} onChange={(e) => update("customerName", e.target.value)} /></div>
           <div>
             <Label>Customer Domain</Label>
@@ -202,7 +214,7 @@ export default function AdminPanel() {
             )}
 
             {lookup.state === "ready" && (
-              <div className="mt-2 space-y-2 rounded-md border bg-card p-3">
+              <div className="mt-3 space-y-3 rounded-lg border bg-muted/30 p-4">
                 <p className="flex items-center gap-2 text-xs font-medium text-foreground">
                   <Search className="h-3.5 w-3.5" />
                   Matched {lookup.result.sources.company.name ?? lookup.result.sources.company.id}
@@ -219,12 +231,12 @@ export default function AdminPanel() {
                     <span>{w}</span>
                   </p>
                 ))}
-                <div className="rounded border bg-muted/30 p-2 text-xs text-muted-foreground">
+                <div className="rounded-lg border bg-card p-3 text-xs text-muted-foreground">
                   <p className="font-medium text-foreground">Draft Deep Dive</p>
                   <p className="mt-1">Working well: {lookup.result.draft.workingWell.length} point(s)</p>
                   <p>To improve: {lookup.result.draft.toImprove.length} point(s)</p>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-subtle-foreground">
                   Check this is the right customer before applying — it replaces the Deep Dive section.
                 </p>
                 <div className="flex gap-2">
@@ -234,6 +246,10 @@ export default function AdminPanel() {
               </div>
             )}
           </div>
+          </CardContent>
+        </Card>
+
+        <Card><CardHeader className="pb-3"><CardTitle className="text-base">Basic info</CardTitle></CardHeader><CardContent className="space-y-3">
           <div><Label>Logo URL</Label><Input value={draft.customerLogoUrl} onChange={(e) => update("customerLogoUrl", e.target.value)} /></div>
           <div><Label>QBR Title</Label><Input value={draft.qbrTitle} onChange={(e) => update("qbrTitle", e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -243,7 +259,7 @@ export default function AdminPanel() {
         </CardContent></Card>
 
         {/* Team */}
-        <Card><CardHeader><CardTitle className="text-lg">Team</CardTitle></CardHeader><CardContent className="space-y-3">
+        <Card><CardHeader><CardTitle className="text-base">Team</CardTitle></CardHeader><CardContent className="space-y-3">
           {draft.team.map((m, i) => (
             <div key={i} className="grid grid-cols-3 gap-2">
               <Input placeholder="Name" value={m.name} onChange={(e) => { const t = [...draft.team]; t[i] = { ...m, name: e.target.value }; update("team", t); }} />
@@ -257,7 +273,7 @@ export default function AdminPanel() {
         {/* Teams & Agents */}
         <Card><CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Teams & Agents</CardTitle>
+            <CardTitle className="text-base">Teams & Agents</CardTitle>
             <Button variant="outline" size="sm" onClick={addTeam}><Plus className="mr-1 h-3 w-3" /> Add Team</Button>
           </div>
         </CardHeader><CardContent className="space-y-4">
@@ -274,7 +290,7 @@ export default function AdminPanel() {
         </CardContent></Card>
 
         {/* Engagement */}
-        <Card><CardHeader><CardTitle className="text-lg">Engagement Metrics</CardTitle></CardHeader><CardContent className="space-y-3">
+        <Card><CardHeader><CardTitle className="text-base">Engagement Metrics</CardTitle></CardHeader><CardContent className="space-y-3">
           <div><Label>Licensed Seats</Label><Input type="number" value={draft.licensedSeats} onChange={(e) => update("licensedSeats", +e.target.value)} /></div>
           {draft.engagement.map((m, i) => (
             <div key={i} className="grid grid-cols-3 gap-2">
@@ -288,7 +304,7 @@ export default function AdminPanel() {
         </CardContent></Card>
 
         {/* Deep Dive */}
-        <Card><CardHeader><CardTitle className="text-lg">Deep Dive</CardTitle></CardHeader><CardContent className="space-y-3">
+        <Card><CardHeader><CardTitle className="text-base">Deep Dive</CardTitle></CardHeader><CardContent className="space-y-3">
           <div><Label>What's Working Well (one per line)</Label>
             <Textarea rows={5} value={draft.workingWell.join("\n")} onChange={(e) => update("workingWell", e.target.value.split("\n").filter(Boolean))} />
           </div>
@@ -298,7 +314,7 @@ export default function AdminPanel() {
         </CardContent></Card>
 
         {/* Integrations */}
-        <Card><CardHeader><CardTitle className="text-lg">Tech Stack & Integrations</CardTitle></CardHeader><CardContent className="space-y-4">
+        <Card><CardHeader><CardTitle className="text-base">Tech Stack & Integrations</CardTitle></CardHeader><CardContent className="space-y-4">
           <div><Label>Connected Integrations (one per line)</Label>
             <Textarea rows={4} value={(draft.connectedIntegrations || []).map(i => i.name).join("\n")} onChange={(e) => update("connectedIntegrations", e.target.value.split("\n").filter(Boolean).map(name => ({ name })))} />
           </div>
@@ -310,7 +326,7 @@ export default function AdminPanel() {
         {/* Product Roadmap */}
         <Card><CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Product Roadmap</CardTitle>
+            <CardTitle className="text-base">Product Roadmap</CardTitle>
             <Button variant="outline" size="sm" onClick={addRoadmapItem}><Plus className="mr-1 h-3 w-3" /> Add Item</Button>
           </div>
         </CardHeader><CardContent className="space-y-6">

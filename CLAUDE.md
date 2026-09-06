@@ -257,6 +257,14 @@ Two decisions worth keeping:
 The cover inverts the old hierarchy: the customer's name is the display line and
 "Quarterly Business Review" is a small eyebrow label above it.
 
+The admin panel leads with a **Customer & sources** card holding Customer Name
+and Customer Domain, because entering the domain is what triggers the HubSpot
+and Gong lookup — it is the primary action, not one field among many. Remaining
+fields sit in a plain "Basic info" card below. The header is sticky so Save
+stays reachable in a long form, and the overlay is solid rather than
+translucent: a document editor showing the page bleeding through reads as a
+modal, not a workspace.
+
 `AgendaOverview` and `TeamSection` use separate bordered cards with `gap-3`
 rather than a `gap-px bg-border` hairline grid — with five items in a
 three-column grid the old pattern left an empty grey cell in the last row.
