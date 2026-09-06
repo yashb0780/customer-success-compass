@@ -29,12 +29,12 @@ function IntegrationCard({ integration, connected }: { integration: Integration;
   const Icon = (integration.icon && iconsByName[integration.icon]) || iconMap[integration.name] || Plug;
   return (
     <div className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-pill bg-muted text-muted-foreground">
         <Icon className="h-4 w-4" />
       </div>
       <span className="text-sm font-medium text-foreground flex-1">{integration.name}</span>
       {!connected && (
-        <span className="text-xs font-medium text-qbr-success">Available</span>
+        <span className="rounded-pill border px-2 py-0.5 text-xs text-subtle-foreground">Available</span>
       )}
     </div>
   );
@@ -45,12 +45,12 @@ export default function IntegrationOpportunities() {
   const connected = data.connectedIntegrations || [];
   const available = data.availableIntegrations || [];
   return (
-    <section id="integrations" className="qbr-section section-alt px-6 py-16">
+    <section id="integrations" className="qbr-section section-alt px-6 py-20">
       <div className="mx-auto max-w-5xl space-y-10">
         <div className="mb-2">
           <div className="flex items-center gap-2 mb-1">
             <Layers className="h-4 w-4 text-muted-foreground" />
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Integrations</p>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-subtle-foreground">Integrations</p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl font-semibold text-foreground">Tech Stack & Integrations</h2>
@@ -59,7 +59,7 @@ export default function IntegrationOpportunities() {
         </div>
 
         <div className="space-y-4">
-          <p className="text-sm font-medium text-muted-foreground">Current Tech Stack</p>
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-subtle-foreground">Current Tech Stack</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {connected.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected />
@@ -68,7 +68,7 @@ export default function IntegrationOpportunities() {
         </div>
 
         <div className="space-y-4">
-          <p className="text-sm font-medium text-muted-foreground">Available Integrations</p>
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-subtle-foreground">Available Integrations</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {available.map((i) => (
               <IntegrationCard key={i.name} integration={i} connected={false} />

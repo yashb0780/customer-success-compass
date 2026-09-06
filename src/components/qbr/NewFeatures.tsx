@@ -37,18 +37,18 @@ export default function NewFeatures() {
               onClick={() => setFlippedCard(isFlipped ? null : f.title)}
             >
               <div className="flip-card-inner">
-                <div className="flip-card-front rounded-lg border bg-card p-5 flex flex-col justify-between transition-colors hover:bg-muted/30">
+                <div className="flip-card-front rounded-lg border bg-card p-6 flex flex-col justify-between transition-colors hover:bg-muted/30">
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h4 className="text-sm font-medium text-foreground">{f.title}</h4>
-                      <span className={cn("shrink-0 rounded-md px-2 py-0.5 text-xs font-medium", statusStyles[f.status])}>{statusLabels[f.status]}</span>
+                      <span className={cn("shrink-0 rounded-pill px-2.5 py-0.5 text-xs font-medium", statusStyles[f.status])}>{statusLabels[f.status]}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">{f.shortDescription}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3">Click to explore →</p>
+                  <p className="mt-3 text-xs text-subtle-foreground">Click to explore →</p>
                 </div>
 
-                <div className="flip-card-back rounded-lg border border-primary/20 bg-card p-5 flex flex-col overflow-hidden">
+                <div className="flip-card-back rounded-lg border border-primary/20 bg-card p-6 flex flex-col overflow-hidden">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h4 className="text-sm font-medium text-foreground">{f.title}</h4>
                     <button
@@ -61,7 +61,7 @@ export default function NewFeatures() {
                   <p className="text-xs text-muted-foreground mb-2">{f.longDescription}</p>
                   <div className="flex flex-wrap gap-1 mb-2">
                     {f.impactTags.map((t) => (
-                      <span key={t} className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t}</span>
+                      <span key={t} className="rounded-pill bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">{t}</span>
                     ))}
                   </div>
                   {f.videoUrl && (

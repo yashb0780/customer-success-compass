@@ -53,6 +53,7 @@ export default {
           danger: "hsl(var(--qbr-danger))",
           info: "hsl(var(--qbr-info))",
         },
+        "subtle-foreground": "hsl(var(--subtle-foreground))",
         "section-alt": "hsl(var(--section-alt))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -67,8 +68,28 @@ export default {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 7px)",
+        control: "var(--radius-control)",
+        pill: "9999px",
+      },
+      boxShadow: {
+        subtle: "var(--shadow-subtle)",
+      },
+      // The base scale is retuned rather than extended, so existing text-sm /
+      // text-xs usages pick up the new sizes without touching every component.
+      // text-xs stays at 12px on purpose: these decks get screenshared on video
+      // calls and labels have to survive that.
+      fontSize: {
+        xs: ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.01em" }],
+        sm: ["0.84375rem", { lineHeight: "1.3125rem" }],
+        base: ["0.9375rem", { lineHeight: "1.5rem" }],
+        lg: ["1rem", { lineHeight: "1.5rem", letterSpacing: "-0.006em" }],
+        xl: ["1.125rem", { lineHeight: "1.625rem", letterSpacing: "-0.01em" }],
+        "2xl": ["1.3125rem", { lineHeight: "1.75rem", letterSpacing: "-0.014em" }],
+        "3xl": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.018em" }],
+        "4xl": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: "-0.02em" }],
+        "5xl": ["2.125rem", { lineHeight: "2.5rem", letterSpacing: "-0.022em" }],
       },
       keyframes: {
         "accordion-down": {

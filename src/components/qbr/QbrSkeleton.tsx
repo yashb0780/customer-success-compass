@@ -24,7 +24,7 @@ function CardGrid({ count, columns }: { count: number; columns: string }) {
   return (
     <div className={`grid gap-px overflow-hidden rounded-lg border bg-border ${columns}`}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex items-start gap-3 bg-card p-5">
+        <div key={i} className="flex items-start gap-3 bg-card p-6">
           <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
           <div className="min-w-0 flex-1 space-y-2">
             <Skeleton className="h-4 w-2/3" />
@@ -63,7 +63,7 @@ export default function QbrSkeleton() {
       </section>
 
       {/* Agenda */}
-      <section className="section-alt px-6 py-16">
+      <section className="section-alt px-6 py-20">
         <div className="mx-auto max-w-5xl">
           <SectionHeading />
           <CardGrid count={5} columns="sm:grid-cols-2 lg:grid-cols-3" />
@@ -71,7 +71,7 @@ export default function QbrSkeleton() {
       </section>
 
       {/* Team */}
-      <section className="px-6 py-16">
+      <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
           <SectionHeading />
           <CardGrid count={3} columns="sm:grid-cols-2 lg:grid-cols-3" />
@@ -79,14 +79,14 @@ export default function QbrSkeleton() {
       </section>
 
       {/* Current state: two stat cards, then a breakdown panel */}
-      <section className="section-alt px-6 py-16">
+      <section className="section-alt px-6 py-20">
         <div className="mx-auto max-w-5xl space-y-12">
           <SectionHeading />
           <div className="space-y-6">
             <Skeleton className="h-6 w-40" />
             <div className="grid gap-4 sm:grid-cols-2">
               {[0, 1].map((i) => (
-                <div key={i} className="flex items-center gap-4 rounded-lg border bg-card p-5">
+                <div key={i} className="flex items-center gap-4 rounded-lg border bg-card p-6">
                   <Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-3 w-28" />
@@ -96,7 +96,7 @@ export default function QbrSkeleton() {
               ))}
             </div>
             <div className="rounded-lg border bg-card">
-              <div className="border-b px-5 py-3">
+              <div className="border-b px-6 py-3.5">
                 <Skeleton className="h-4 w-48" />
               </div>
               <div className="grid grid-cols-2 divide-x divide-y sm:grid-cols-4">

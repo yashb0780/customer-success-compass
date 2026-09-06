@@ -7,10 +7,10 @@ export default function ThankYouSlide() {
   return (
     <section className="qbr-section flex min-h-[60vh] flex-col items-center justify-center text-center px-6 py-20">
       <div className="space-y-6">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border bg-card">
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-pill border bg-card">
           <Heart className="h-5 w-5 text-primary" />
         </div>
-        <h2 className="text-4xl font-semibold tracking-tight text-foreground">Thank You</h2>
+        <h2 className="text-3xl font-semibold text-foreground">Thank you</h2>
         <p className="text-base text-muted-foreground max-w-md mx-auto">
           We appreciate the partnership with {data.customerName}. Looking forward to continued success in {data.quarter} and beyond.
         </p>

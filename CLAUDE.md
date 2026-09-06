@@ -223,6 +223,44 @@ reason while the fallback was in fact broken.
 - The merge is shallow, so *new top-level fields* fall through correctly, but
   changes nested inside an existing field do not.
 
+## Visual language
+
+Restyled 2026-09-05. Shape language from Dust's buttons (fully rounded pills,
+generous padding); restraint from Linear and Notion (limited palette, real type
+scale, subtle borders over shadows, no gradients). It should read as a business
+document a CSM sends a customer, not a marketing page.
+
+**Change it through tokens, not component by component.** The three files that
+carry the design are `src/index.css` (colour, radii, shadow), `tailwind.config.ts`
+(type scale, radius names) and `src/components/ui/button.tsx`. Retuning the base
+`fontSize` scale there restyles every existing `text-sm`/`text-xs` in the app,
+and `--radius` drives every `rounded-lg`.
+
+| Token | Value | Notes |
+|---|---|---|
+| `--radius` | `0.875rem` (14px) | Containers: cards, panels, tables |
+| `rounded-pill` | `9999px` | Anything clickable, plus status chips |
+| `--radius-control` | `0.625rem` | Inputs and textareas |
+| `--primary` | `234 42% 46%` | One accent, used sparingly |
+| `--subtle-foreground` | `240 4% 58%` | Third text level for labels/metadata |
+| `--shadow-subtle` | `0 1px 2px …/0.04` | Floating elements only; borders elsewhere |
+
+Two decisions worth keeping:
+
+- **`text-xs` stays at 12px** while the rest of the scale shrank. These decks
+  get screenshared on video calls and labels have to survive that.
+- **Status colour lives in the dot, never the text.** Feature Adoption used to
+  render "High"/"Medium"/"Low" in green/amber/red, which was the loudest thing
+  on a page a customer reads. The 6px dot keeps the colour; the word is neutral.
+  The word alone already carried the meaning for colour-blind readers.
+
+The cover inverts the old hierarchy: the customer's name is the display line and
+"Quarterly Business Review" is a small eyebrow label above it.
+
+`AgendaOverview` and `TeamSection` use separate bordered cards with `gap-3`
+rather than a `gap-px bg-border` hairline grid — with five items in a
+three-column grid the old pattern left an empty grey cell in the last row.
+
 ## Customer domain and content provenance
 
 ### `customerDomain`

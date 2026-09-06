@@ -21,13 +21,13 @@ export default function QbrDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky nav */}
-      <nav className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center gap-0.5 overflow-x-auto px-4 py-2">
           {navItems.map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
-              className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="shrink-0 rounded-pill px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {n.label}
             </a>
@@ -41,10 +41,10 @@ export default function QbrDashboard() {
       <TeamSection />
 
       {/* Current State */}
-      <section id="current-state" className="qbr-section section-alt px-6 py-16">
+      <section id="current-state" className="qbr-section section-alt px-6 py-20">
         <div className="mx-auto max-w-5xl space-y-12">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-1">Analytics</p>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-subtle-foreground mb-1">Analytics</p>
             <h2 className="text-2xl font-semibold text-foreground">Current State</h2>
           </div>
           <FeatureAdoption />
@@ -57,7 +57,7 @@ export default function QbrDashboard() {
       <FutureState />
 
       {/* Roadmap + New Features */}
-      <section className="section-alt px-6 py-16">
+      <section className="section-alt px-6 py-20">
         <div className="mx-auto max-w-5xl space-y-12">
           <ProductRoadmap />
           <NewFeatures />
@@ -68,7 +68,7 @@ export default function QbrDashboard() {
       <ThankYouSlide />
 
       {/* Footer */}
-      <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
+      <footer className="border-t px-6 py-10 text-center text-xs text-subtle-foreground">
         Prepared for {data.customerName} · {data.quarter} · {data.footerNote} · <DataSourceBadge variant="text" />
       </footer>
 

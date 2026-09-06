@@ -93,7 +93,7 @@ export default function DataSourceBadge({ variant = "pill" }: { variant?: "pill"
     <span
       title={state.detail}
       aria-label={`${state.label}. ${state.detail}`}
-      className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium text-muted-foreground"
+      className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-pill border px-2.5 py-1 text-xs font-medium text-muted-foreground"
     >
       {state.showDot && (
         <span

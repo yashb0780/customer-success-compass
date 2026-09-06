@@ -2,7 +2,6 @@ import { useQbr } from "@/contexts/QbrContext";
 import SectionSourceNote from "@/components/qbr/SectionSourceNote";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { Layers, TrendingUp } from "lucide-react";
 
 const usageLabels: Record<string, string> = { high: "High", medium: "Medium", low: "Low" };
 
@@ -18,40 +17,29 @@ export default function FeatureAdoption() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex items-center gap-4 rounded-lg border bg-card p-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-            <Layers className="h-4 w-4" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Features in Use</p>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">{data.featuresInUse}</p>
-          </div>
+        <div className="rounded-lg border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-subtle-foreground">Features in Use</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-foreground">{data.featuresInUse}</p>
         </div>
-        <div className="flex items-center gap-4 rounded-lg border bg-card p-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-            <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="flex-1">
-            <p className="text-xs text-muted-foreground">Adoption Rate</p>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">{pct}%</p>
-            <Progress value={pct} className="mt-1.5 h-1.5" />
-          </div>
+        <div className="rounded-lg border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-subtle-foreground">Adoption Rate</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-foreground">{pct}%</p>
+          <Progress value={pct} className="mt-3 h-1 rounded-pill" />
         </div>
       </div>
 
       <div className="rounded-lg border bg-card">
-        <div className="border-b px-5 py-3">
-          <p className="text-sm font-medium text-foreground">Feature Usage Breakdown</p>
+        <div className="border-b px-6 py-3.5">
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-subtle-foreground">Feature Usage Breakdown</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y">
           {data.features.map((f) => (
-            <div key={f.name} className="flex flex-col gap-1 px-4 py-3 hover:bg-muted/30 transition-colors">
+            <div key={f.name} className="flex flex-col gap-1.5 px-5 py-4 transition-colors hover:bg-muted/30">
               <p className="text-sm font-medium text-foreground leading-tight">{f.name}</p>
-              <span className={cn("inline-flex items-center gap-1 text-xs font-medium",
-                f.usage === "high" && "text-qbr-success",
-                f.usage === "medium" && "text-qbr-warning",
-                f.usage === "low" && "text-qbr-danger",
-              )}>
+              {/* Colour lives in the dot only. Coloured status TEXT was the
+                  loudest thing on a page a customer reads, and the word alone
+                  already carries the meaning for colour-blind readers. */}
+              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span className={cn("h-1.5 w-1.5 rounded-full",
                   f.usage === "high" && "bg-qbr-success",
                   f.usage === "medium" && "bg-qbr-warning",

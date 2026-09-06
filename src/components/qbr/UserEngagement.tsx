@@ -16,7 +16,7 @@ export default function UserEngagement() {
       <h3 className="text-lg font-semibold text-foreground">User Engagement</h3>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border bg-card p-5">
+        <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center gap-2 mb-2">
             <Users className="h-3.5 w-3.5 text-muted-foreground" />
             <p className="text-xs text-muted-foreground">Licensed Seats</p>
@@ -24,7 +24,7 @@ export default function UserEngagement() {
           <p className="text-2xl font-semibold text-foreground tabular-nums">{data.licensedSeats}</p>
         </div>
         {data.engagement.map((m) => (
-          <div key={m.label} className="rounded-lg border bg-card p-5">
+          <div key={m.label} className="rounded-lg border bg-card p-6">
             <div className="flex items-center gap-2 mb-2">
               <Activity className="h-3.5 w-3.5 text-muted-foreground" />
               <p className="text-xs text-muted-foreground">{m.label}</p>
@@ -39,7 +39,7 @@ export default function UserEngagement() {
       </div>
 
       <div className="rounded-lg border bg-card">
-        <div className="border-b px-5 py-3">
+        <div className="border-b px-6 py-3.5">
           <p className="text-sm font-medium text-foreground">Engagement Trend (Last 90 Days)</p>
         </div>
         <div className="p-5">

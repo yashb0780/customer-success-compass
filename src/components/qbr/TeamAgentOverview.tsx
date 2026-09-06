@@ -40,7 +40,7 @@ export default function TeamAgentOverview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">Team & Agent Overview</h3>
-        <span className="text-xs text-muted-foreground">{totalAgents} agents across {teams.length} teams</span>
+        <span className="text-xs text-subtle-foreground">{totalAgents} agents across {teams.length} teams</span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +51,7 @@ export default function TeamAgentOverview() {
           return (
             <div
               key={team.name}
-              className="rounded-lg border bg-card p-5 border-l-4 transition-colors hover:bg-muted/30"
+              className="rounded-lg border border-l-[3px] bg-card p-6 transition-colors hover:bg-muted/30"
               style={{ borderLeftColor: cfg.borderColor }}
             >
               <div className="flex items-start justify-between mb-3">
@@ -59,12 +59,12 @@ export default function TeamAgentOverview() {
                   <span className={`${cfg.color}`}>{icon}</span>
                   <h4 className="text-sm font-medium text-foreground">{team.name}</h4>
                 </div>
-                <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${cfg.color} bg-muted`}>
+                <span className="rounded-pill bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                   {cfg.label}
                 </span>
               </div>
-              <p className="text-2xl font-semibold text-foreground tabular-nums">{team.agentCount}</p>
-              <p className="text-xs text-muted-foreground mt-1">{team.agentCount} agents · {cfg.label}</p>
+              <p className="text-2xl font-semibold tabular-nums text-foreground">{team.agentCount}</p>
+              <p className="mt-1 text-xs text-subtle-foreground">{team.agentCount} agents · {cfg.label}</p>
             </div>
           );
         })}

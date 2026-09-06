@@ -5,18 +5,18 @@ export default function TeamSection() {
   const { data } = useQbr();
 
   return (
-    <section id="team" className="qbr-section px-6 py-16">
+    <section id="team" className="qbr-section px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-1">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Team</p>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-subtle-foreground">Team</p>
           </div>
           <h2 className="text-2xl font-semibold text-foreground">Your Team</h2>
         </div>
-        <div className="grid gap-px bg-border rounded-lg overflow-hidden border sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {data.team.map((m) => (
-            <div key={m.email} className="flex items-center gap-4 bg-card p-5">
+            <div key={m.email} className="flex items-center gap-4 rounded-lg border bg-card p-6">
               {m.photoUrl ? (
                 <img src={m.photoUrl} alt={m.name} className="h-10 w-10 rounded-full object-cover" />
               ) : (

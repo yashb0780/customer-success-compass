@@ -107,7 +107,7 @@ export default function SectionSourceNote({ section }: { section: SourcedSection
     <span
       title={tooltip}
       aria-label={`Content source: ${text}. ${tooltip}`}
-      className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground"
+      className="inline-flex shrink-0 items-center gap-1.5 text-xs text-subtle-foreground"
     >
       {stale && (
         <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-qbr-warning" />

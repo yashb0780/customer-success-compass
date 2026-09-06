@@ -27,7 +27,7 @@ export default function ProductRoadmap() {
 
   const renderGroup = (title: string, items: typeof data.roadmap) => (
     <div key={title} className="space-y-3">
-      <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{title}</p>
+      <p className="text-xs font-medium uppercase tracking-[0.14em] text-subtle-foreground">{title}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => {
           const isFlipped = flippedCard === item.name;
@@ -39,24 +39,24 @@ export default function ProductRoadmap() {
               onClick={() => setFlippedCard(isFlipped ? null : item.name)}
             >
               <div className="flip-card-inner">
-                <div className="flip-card-front rounded-lg border bg-card p-5 flex flex-col justify-between transition-colors hover:bg-muted/30">
+                <div className="flip-card-front rounded-lg border bg-card p-6 flex flex-col justify-between transition-colors hover:bg-muted/30">
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-3">
                       <h5 className="text-sm font-medium text-foreground leading-tight">{item.name}</h5>
-                      <span className={cn("shrink-0 rounded-md px-2 py-0.5 text-xs font-medium", statusStyles[item.status])}>
+                      <span className={cn("shrink-0 rounded-pill px-2.5 py-0.5 text-xs font-medium", statusStyles[item.status])}>
                         {statusLabels[item.status]}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {item.impactTags.map((t) => (
-                        <span key={t} className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t}</span>
+                        <span key={t} className="rounded-pill bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">{t}</span>
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3">Click to learn more →</p>
+                  <p className="mt-3 text-xs text-subtle-foreground">Click to learn more →</p>
                 </div>
 
-                <div className="flip-card-back rounded-lg border border-primary/20 bg-card p-5 flex flex-col overflow-hidden">
+                <div className="flip-card-back rounded-lg border border-primary/20 bg-card p-6 flex flex-col overflow-hidden">
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <h5 className="text-sm font-medium text-foreground">{item.name}</h5>
                     <button
